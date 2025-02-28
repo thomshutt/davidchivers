@@ -79,7 +79,7 @@
             let weeklyUnits = period === "weekly" ? units : units * 7;
             let dailyUnits = period === "daily" ? units : (units / 7).toFixed(2);
             
-            document.getElementById("result").innerText = `${weeklyUnits} units a week or ${dailyUnits} units a day`;
+            document.getElementById("result").innerText = `${weeklyUnits} units a week`;
             
             let percentile = Math.min(99, Math.max(1, Math.round((weeklyUnits / 50) * 99)));
             let isAdultPopulation = true;
