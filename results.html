@@ -86,8 +86,8 @@
             function toggleGraph() {
                 isAdultPopulation = !isAdultPopulation;
                 document.getElementById("percentile").innerText = isAdultPopulation ? 
-                    `You are in the </b>${percentile}th percentile</b> of the UK adult population.` : 
-                    `You are in the </b>${percentile}th percentile</b> of the UK adult population who drink alcohol.`;
+                    `You are in the <b> ${percentile}th percentile </b> of the UK adult population.` : 
+                    `You are in the <b> ${percentile}th percentile </b> of the UK adult population who drink alcohol.`;
                 document.getElementById("toggleGraph").innerText = isAdultPopulation ? "Switch to UK drinkers" : "Switch to UK adults";
                 updateChart();
             }
@@ -99,7 +99,7 @@
                 `This is a <b>${riskIncrease}% increase in risk</b> compared to people who do not drink.`;
             
             document.getElementById("calories-info").innerHTML = 
-                `You are consuming <b>${weeklyUnits * 56} calories a week</b> of pure alcohol. This increases depending on <a href="#">what you drink</a>.`;
+                `You are consuming <b>${weeklyUnits * 56} calories a week </b> of pure alcohol. This increases depending on <a href="#">what you drink</a>.`;
             
             const ctx = document.getElementById('consumptionChart').getContext('2d');
             let consumptionChart = new Chart(ctx, {
