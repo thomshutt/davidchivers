@@ -56,7 +56,7 @@
 <body>
     <div class="container">
         <h1 id="result"></h1>
-        <p id="percentile">You are in the NaNth percentile of the UK adult population.</p>
+        <p id="percentile">You are in the <b>NaNth percentile</b> of the UK adult population.</p>
         <button id="toggleGraph" onclick="toggleGraph()">Switch to UK drinkers</button>
         <div class="chart-container">
             <canvas id="consumptionChart"></canvas>
@@ -87,20 +87,20 @@
             function toggleGraph() {
                 isAdultPopulation = !isAdultPopulation;
                 document.getElementById("percentile").innerText = isAdultPopulation ? 
-                    `You are in the ${percentile}th percentile of the UK adult population.` : 
-                    `You are in the ${percentile}th percentile of the UK adult population who drink alcohol.`;
+                    `You are in the </b>${percentile}th percentile</b> of the UK adult population.` : 
+                    `You are in the </b>${percentile}th percentile</b> of the UK adult population who drink alcohol.`;
                 document.getElementById("toggleGraph").innerText = isAdultPopulation ? "Switch to UK drinkers" : "Switch to UK adults";
                 updateChart();
             }
             
             let riskIncrease = (((weeklyUnits * 0.7) - 9.1) / 9.1 * 100).toFixed(2);
             document.getElementById("risk-statement").innerText = 
-                `Drinking ${weeklyUnits} units a week gives you a ${(weeklyUnits * 0.7).toFixed(1)} in 1000 chance of developing an alcohol-related health problem.`;
+                `Drinking ${weeklyUnits} units a week gives you a </b>${(weeklyUnits * 0.7).toFixed(1)} in 1000</b> chance of developing an alcohol-related health problem.`;
             document.getElementById("risk-increase").innerText = 
-                `This is a ${riskIncrease}% increase in risk compared to people who do not drink.`;
+                `This is a </b>${riskIncrease}% increase in risk</b> compared to people who do not drink.`;
             
             document.getElementById("calories-info").innerHTML = 
-                `You are consuming ${weeklyUnits * 56} calories a week of pure alcohol. This increases depending on <a href="#">what you drink</a>.`;
+                `You are consuming </b>${weeklyUnits * 56} calories a week</b> of pure alcohol. This increases depending on <a href="#">what you drink</a>.`;
             
             const ctx = document.getElementById('consumptionChart').getContext('2d');
             let consumptionChart = new Chart(ctx, {
