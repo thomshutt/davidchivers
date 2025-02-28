@@ -85,7 +85,7 @@
             
             function toggleGraph() {
                 isAdultPopulation = !isAdultPopulation;
-                document.getElementById("percentile").innerText = isAdultPopulation ? 
+                document.getElementById("percentile").innerHTML = isAdultPopulation ? 
                     `You are in the <strong>${percentile}th percentile</strong> of the UK adult population.` : 
                     `You are in the <strong>${percentile}th percentile</strong> of the UK adult population who drink alcohol.`;
                 document.getElementById("toggleGraph").innerText = isAdultPopulation ? "Switch to UK drinkers" : "Switch to UK adults";
@@ -93,9 +93,9 @@
             }
             
             let riskIncrease = (((weeklyUnits * 0.7) - 9.1) / 9.1 * 100).toFixed(2);
-            document.getElementById("risk-statement").innerText = 
+            document.getElementById("risk-statement").innerHTML = 
                 `Drinking <strong>${weeklyUnits} units a week</strong> gives you a <strong>${(weeklyUnits * 0.7).toFixed(1)} in 1000</strong> chance of developing an alcohol-related health problem.`;
-            document.getElementById("risk-increase").innerText = 
+            document.getElementById("risk-increase").innerHTML = 
                 `This is a <strong>${riskIncrease}% increase in risk</strong> compared to people who do not drink.`;
             
             document.getElementById("calories-info").innerHTML = 
