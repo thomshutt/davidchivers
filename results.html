@@ -94,9 +94,9 @@
             
             let riskIncrease = (((weeklyUnits * 0.7) - 9.1) / 9.1 * 100).toFixed(2);
             document.getElementById("risk-statement").innerText = 
-                `Drinking ${weeklyUnits} units a week</b> gives you a ${(weeklyUnits * 0.7).toFixed(1)} in 1000 </b> chance of developing an alcohol-related health problem.`;
+                `Drinking <b> ${weeklyUnits} units a week </b> gives you a <b> ${(weeklyUnits * 0.7).toFixed(1)} in 1000 </b> chance of developing an alcohol-related health problem.`;
             document.getElementById("risk-increase").innerText = 
-                `This is a <b>${riskIncrease}% increase in risk</b> compared to people who do not drink.`;
+                `This is a <b> ${riskIncrease}% increase in risk </b> compared to people who do not drink.`;
             
             document.getElementById("calories-info").innerHTML = 
                 `You are consuming <b> ${weeklyUnits * 56} calories a week </b> of pure alcohol. This increases depending on <a href="#">what you drink</a>.`;
