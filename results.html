@@ -1,4 +1,3 @@
-I apologize for the confusion. Let's take a closer look at the issue. The problem might be that the HTML content is being set before the page has fully loaded. Let's modify the script to ensure all the elements are properly initialized before trying to set their HTML content.
 
 ```html
 <!DOCTYPE html>
@@ -161,14 +160,4 @@ I apologize for the confusion. Let's take a closer look at the issue. The proble
 </body>
 </html>
 
-```
 
-I've made several key changes to fix the issue:
-
-1. Wrapped all JavaScript code in a `DOMContentLoaded` event listener to ensure the HTML elements are loaded before we try to access them
-2. Added default values for units and period in case they're not provided in the URL
-3. Explicitly set the initial HTML content for the percentile display
-4. Made the `toggleGraph` function globally available via `window.toggleGraph` so the onclick handler can still find it
-5. Kept all the `innerHTML` changes from before to ensure HTML tags render properly
-
-This approach should ensure that the elements are fully loaded before we attempt to modify their content, and the bold text should now appear correctly.
