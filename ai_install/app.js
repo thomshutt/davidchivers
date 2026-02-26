@@ -162,7 +162,7 @@ function chooseEditorStep() {
       <p class="small">Current selection: <strong>${editorLabel(state.editor)}</strong></p>
       <p><strong>Download links:</strong> <a href="https://code.visualstudio.com/Download" target="_blank">VS Code</a> or <a href="https://www.cursor.com/downloads" target="_blank">Cursor</a>.</p>
       ${chosenEditorInstall}
-      ${learnBlock('Learn more', '<p>VS Code and Cursor are both fine. Choose the one you find easier to use. You can switch later.</p>')}
+      ${learnBlock('Learn more', '<p>Cursor is based on VS Code and adds built-in AI features. It is easy to switch between VS Code and Cursor later.</p>')}
     `,
     onRender: () => {
       document.querySelectorAll('[data-editor]').forEach(btn => {
