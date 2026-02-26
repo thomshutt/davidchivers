@@ -118,6 +118,7 @@ function chooseToolStep() {
         <button class="btn choice" data-tool="both">Both</button>
       </div>
       <p class="small">Current selection: <strong>${toolLabel(state.tool)}</strong></p>
+      ${learnBlock('Learn more', '<p>Codex and Claude can both help in terminal workflows. You can install one now and add the other later.</p>')}
     `,
     onRender: () => {
       document.querySelectorAll('[data-tool]').forEach(btn => {
@@ -161,6 +162,7 @@ function chooseEditorStep() {
       <p class="small">Current selection: <strong>${editorLabel(state.editor)}</strong></p>
       <p><strong>Download links:</strong> <a href="https://code.visualstudio.com/Download" target="_blank">VS Code</a> or <a href="https://www.cursor.com/downloads" target="_blank">Cursor</a>.</p>
       ${chosenEditorInstall}
+      ${learnBlock('Learn more', '<p>VS Code and Cursor are both fine. Choose the one you find easier to use. You can switch later.</p>')}
     `,
     onRender: () => {
       document.querySelectorAll('[data-editor]').forEach(btn => {
@@ -190,6 +192,7 @@ function gitStep() {
         <p>Alternative: <a href="https://git-scm.com/download/mac" target="_blank">https://git-scm.com/download/mac</a></p>
         <p>In ${editor}, open <strong>Terminal -> New Terminal</strong>, then run:</p>
         <div class="code">git --version</div>
+        ${learnBlock('Learn more', '<p>Git keeps a history of your files so you can back up work and return to earlier versions.</p>')}
       `
     };
   }
@@ -203,6 +206,7 @@ function gitStep() {
       <p>Install from: <a href="https://git-scm.com/download/win" target="_blank">https://git-scm.com/download/win</a></p>
       <p>In ${editor}, open <strong>Terminal -> New Terminal</strong>, then run:</p>
       <div class="code">git --version</div>
+      ${learnBlock('Learn more', '<p>Git keeps a history of your files so you can back up work and return to earlier versions.</p>')}
     `
   };
 }
@@ -222,6 +226,7 @@ function nodeStep() {
         <li>Run:</li>
       </ol>
       <div class="code">node -v\nnpm -v</div>
+      ${learnBlock('Learn more', '<p>Node and npm are needed to install Codex and Claude Code command line tools.</p>')}
     `
   };
 }
@@ -245,6 +250,7 @@ function installAgentStep() {
       <h2>Page 6: Install ${toolLabel(state.tool)}</h2>
       <p>Paste these commands into the <strong>${editor} terminal</strong> (Terminal -> New Terminal).</p>
       ${commands}
+      ${learnBlock('Learn more', '<p>If a command fails, copy the full error and paste it into ChatGPT or Claude for the next exact fix command.</p>')}
     `
   };
 }
@@ -260,13 +266,13 @@ function templateStep() {
     ? `<p><a href="${basicZipUrl}" target="_blank">Download Basic starter ZIP</a></p>`
     : '<p><strong>Basic ZIP link not configured yet.</strong></p>';
   const advancedZipBlock = advancedZipUrl
-    ? `<p><a href="${advancedZipUrl}" target="_blank">Download Advanced full ZIP</a></p>`
-    : '<p><strong>Advanced ZIP link not configured yet.</strong></p>';
+    ? `<p><a href="${advancedZipUrl}" target="_blank">Download Full starter ZIP</a></p>`
+    : '<p><strong>Full starter ZIP link not configured yet.</strong></p>';
   const basicOneDriveBlock = hasBasicOneDrive
     ? `<p><a href="${distribution.oneDriveFolderUrlBasic}" target="_blank">Open Basic starter on OneDrive</a></p>`
     : '';
   const advancedOneDriveBlock = hasAdvancedOneDrive
-    ? `<p><a href="${distribution.oneDriveFolderUrlAdvanced}" target="_blank">Open Advanced full on OneDrive</a></p>`
+    ? `<p><a href="${distribution.oneDriveFolderUrlAdvanced}" target="_blank">Open Full starter on OneDrive</a></p>`
     : '';
 
   return {
@@ -281,7 +287,7 @@ function templateStep() {
       ${basicZipBlock}
       ${basicOneDriveBlock}
 
-      <h3>Advanced full</h3>
+      <h3>Full starter folder</h3>
       <p>This includes everything in Basic plus profile-style preferences and workflow settings that may be helpful.</p>
       ${advancedZipBlock}
       ${advancedOneDriveBlock}
@@ -292,6 +298,7 @@ function templateStep() {
         <li>Open the folder in your IDE (for example: <strong>File > Open Folder</strong> in ${editor}).</li>
         <li>Select the extracted starter folder.</li>
       </ol>
+      ${learnBlock('Learn more', '<p>Basic is lighter and best for first-time users. Advanced includes extra preferences and workflow structure.</p>')}
     `
   };
 }
@@ -323,6 +330,7 @@ function profileStep() {
         <li>Paste the downloaded profile link and complete the import.</li>
       </ol>
       <p class="small">You can skip this step and continue. Your setup will still work.</p>
+      ${learnBlock('Learn more', '<p>A profile imports settings and extensions quickly. It is optional, and you can always customize later.</p>')}
     `
   };
 }
@@ -340,6 +348,7 @@ function githubStep() {
       <div class="code">I want to back up and pair my folders with Git. I am a beginner. Please explain each step, why it matters, and give me the exact commands for my computer.</div>
       <p><strong>If you want direct commands:</strong></p>
       <div class="code">git init\ngit add .\ngit commit -m "Initial backup"\ngit branch -M main\ngit remote add origin https://github.com/YOUR_USER/YOUR_REPO.git\ngit push -u origin main</div>
+      ${learnBlock('Learn more', '<p>You do not need to memorize Git commands on day one. Start with basic backup and ask the AI to explain each command.</p>')}
     `
   };
 }
@@ -362,6 +371,7 @@ function appendixStep() {
         <li><strong>ZIP:</strong> Compressed folder download.</li>
         <li><strong>Profile:</strong> Bundle of editor settings and extensions.</li>
       </ul>
+      ${learnBlock('Learn more', '<p>You can return to this glossary whenever a new term appears during setup.</p>')}
     `
   };
 }
@@ -370,7 +380,11 @@ function doneStep() {
   return {
     id: 'done',
     title: 'Done',
-    html: `<h2>Setup complete</h2><p>You finished the <strong>${osLabel(state.os)}</strong> path with <strong>${toolLabel(state.tool)}</strong> in <strong>${editorLabel(state.editor)}</strong>.</p>`
+    html: `
+      <h2>Setup complete</h2>
+      <p>You finished the <strong>${osLabel(state.os)}</strong> path with <strong>${toolLabel(state.tool)}</strong> in <strong>${editorLabel(state.editor)}</strong>.</p>
+      ${learnBlock('Learn more', '<p>Next step: open your project folder and ask Codex or Claude for one small task to get comfortable.</p>')}
+    `
   };
 }
 
