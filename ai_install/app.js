@@ -251,81 +251,48 @@ function installAgentStep() {
 
 function templateStep() {
   const editor = editorLabel(state.editor);
-  const selectedPack = state.pack;
-  const selectedZipUrl = selectedPack ? githubZipUrlForPack(selectedPack) : null;
-  const selectedOneDriveUrl = selectedPack === 'basic'
-    ? distribution.oneDriveFolderUrlBasic
-    : selectedPack === 'advanced'
-      ? distribution.oneDriveFolderUrlAdvanced
-      : '';
-  const hasOneDrive = hasConfiguredUrl(selectedOneDriveUrl);
+  const basicZipUrl = githubZipUrlForPack('basic');
+  const advancedZipUrl = githubZipUrlForPack('advanced');
+  const hasBasicOneDrive = hasConfiguredUrl(distribution.oneDriveFolderUrlBasic);
+  const hasAdvancedOneDrive = hasConfiguredUrl(distribution.oneDriveFolderUrlAdvanced);
 
-  const selectedDescription = selectedPack === 'basic'
-    ? '<p><strong>Basic starter:</strong> simpler setup for first-time users with core files only.</p>'
-    : selectedPack === 'advanced'
-      ? '<p><strong>Advanced starter:</strong> full setup with preferences, structured notes, and additional standards.</p>'
-      : '<p class="small">Choose Basic or Advanced first.</p>';
-
-  const selectedExamples = selectedPack === 'basic'
-    ? `
-      <ul>
-        <li><code>agents/empirical-idea-generator.md</code></li>
-        <li><code>skills/stata-regression-SKILL.md</code></li>
-        <li><code>projects/_project_template/notes/brainstorm.md</code></li>
-        <li><code>projects/_project_template/notes/research_plan.md</code></li>
-      </ul>
-    `
-      : selectedPack === 'advanced'
-      ? `
-        <ul>
-          <li><code>memory/global_notes.md</code></li>
-          <li><code>projects/_project_template/notes/01_project_overview.md</code></li>
-          <li><code>projects/_project_template/notes/05_research_plan.md</code></li>
-          <li><code>standards/notes_phase_standard.md</code></li>
-        </ul>
-      `
-      : '<p class="small">Select a pack to preview example files.</p>';
-
-  const zipBlock = selectedZipUrl
-    ? `<p><a href="${selectedZipUrl}" target="_blank">Download ${packLabel(selectedPack)} ZIP</a></p>`
-    : selectedPack
-      ? '<p><strong>ZIP link not configured for this pack.</strong></p>'
-      : '';
-
-  const oneDriveBlock = hasOneDrive
-    ? `<p><a href="${selectedOneDriveUrl}" target="_blank">Open ${packLabel(selectedPack)} on OneDrive</a></p>`
+  const basicZipBlock = basicZipUrl
+    ? `<p><a href="${basicZipUrl}" target="_blank">Download Basic starter ZIP</a></p>`
+    : '<p><strong>Basic ZIP link not configured yet.</strong></p>';
+  const advancedZipBlock = advancedZipUrl
+    ? `<p><a href="${advancedZipUrl}" target="_blank">Download Advanced full ZIP</a></p>`
+    : '<p><strong>Advanced ZIP link not configured yet.</strong></p>';
+  const basicOneDriveBlock = hasBasicOneDrive
+    ? `<p><a href="${distribution.oneDriveFolderUrlBasic}" target="_blank">Open Basic starter on OneDrive</a></p>`
+    : '';
+  const advancedOneDriveBlock = hasAdvancedOneDrive
+    ? `<p><a href="${distribution.oneDriveFolderUrlAdvanced}" target="_blank">Open Advanced full on OneDrive</a></p>`
     : '';
 
   return {
     id: 'template',
-    title: 'Choose Starter Pack',
+    title: 'Basic Starter Folder Setup',
     html: `
-      <h2>Page 7: Choose your starter pack</h2>
-      <p>Pick one pack, then download it.</p>
-      <div class="choice-grid">
-        <button class="btn choice" data-pack="basic">Basic starter</button>
-        <button class="btn choice" data-pack="advanced">Advanced starter</button>
-      </div>
-      <p class="small">Current selection: <strong>${packLabel(selectedPack)}</strong></p>
-      ${selectedDescription}
-      ${zipBlock}
-      ${oneDriveBlock}
-      <p><strong>Example files in selected pack:</strong></p>
-      ${selectedExamples}
+      <h2>Page 7: Basic starter folder setup</h2>
+      <p>Start with Basic if you are new. You can try both.</p>
+
+      <h3>Basic starter folder</h3>
+      <p>This includes a folder with core <code>agents/</code> and <code>skills/</code>, plus a simple project template.</p>
+      ${basicZipBlock}
+      ${basicOneDriveBlock}
+
+      <h3>Advanced full</h3>
+      <p>This includes everything in Basic plus profile-style preferences and workflow settings that may be helpful.</p>
+      ${advancedZipBlock}
+      ${advancedOneDriveBlock}
+      <p class="small">You can try both packs and keep whichever works best for you.</p>
+
       <ol>
-        <li>Download/extract your selected pack.</li>
-        <li>In ${editor}: <strong>File -> Open Folder</strong>.</li>
+        <li>Download and extract the pack you want to test.</li>
+        <li>Open the folder in your IDE (for example: <strong>File > Open Folder</strong> in ${editor}).</li>
         <li>Select the extracted starter folder.</li>
       </ol>
-    `,
-    onRender: () => {
-      document.querySelectorAll('[data-pack]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          state.pack = btn.dataset.pack;
-          render();
-        });
-      });
-    }
+    `
   };
 }
 
@@ -462,10 +429,6 @@ nextBtn.addEventListener('click', () => {
   }
   if (step.id === 'choose-editor' && !state.editor) {
     alert('Select VS Code or Cursor first.');
-    return;
-  }
-  if (step.id === 'template' && !state.pack) {
-    alert('Select Basic or Advanced first.');
     return;
   }
   if (state.current < state.steps.length - 1) {
