@@ -2,6 +2,7 @@
   os: null,
   tool: null,
   editor: null,
+  pack: null,
   current: 0,
   steps: []
 };
@@ -40,6 +41,12 @@ function toolLabel(tool) {
 function editorLabel(editor) {
   if (editor === 'vscode') return 'VS Code';
   if (editor === 'cursor') return 'Cursor';
+  return 'Not selected';
+}
+
+function packLabel(pack) {
+  if (pack === 'basic') return 'Basic starter';
+  if (pack === 'advanced') return 'Advanced starter';
   return 'Not selected';
 }
 
@@ -159,6 +166,9 @@ function chooseEditorStep() {
       document.querySelectorAll('[data-editor]').forEach(btn => {
         btn.addEventListener('click', () => {
           state.editor = btn.dataset.editor;
+          // Beginner flow: selecting an editor immediately continues to the next step.
+          buildSteps();
+          state.current = state.steps.findIndex(s => s.id === 'install-git');
           render();
         });
       });
@@ -241,71 +251,126 @@ function installAgentStep() {
 
 function templateStep() {
   const editor = editorLabel(state.editor);
-  const advancedZip = githubZipUrlForPack('advanced');
-  const hasOneDrive = hasConfiguredUrl(distribution.oneDriveFolderUrlAdvanced);
+  const selectedPack = state.pack;
+  const selectedZipUrl = selectedPack ? githubZipUrlForPack(selectedPack) : null;
+  const selectedOneDriveUrl = selectedPack === 'basic'
+    ? distribution.oneDriveFolderUrlBasic
+    : selectedPack === 'advanced'
+      ? distribution.oneDriveFolderUrlAdvanced
+      : '';
+  const hasOneDrive = hasConfiguredUrl(selectedOneDriveUrl);
 
-  const advancedZipBlock = advancedZip
-    ? `<p><a href="${advancedZip}" target="_blank">Download Advanced starter ZIP</a></p>`
-    : '<p><strong>Advanced ZIP not configured.</strong></p>';
+  const selectedDescription = selectedPack === 'basic'
+    ? '<p><strong>Basic starter:</strong> simpler setup for first-time users with core files only.</p>'
+    : selectedPack === 'advanced'
+      ? '<p><strong>Advanced starter:</strong> full setup with preferences, structured notes, and additional standards.</p>'
+      : '<p class="small">Choose Basic or Advanced first.</p>';
+
+  const selectedExamples = selectedPack === 'basic'
+    ? `
+      <ul>
+        <li><code>agents/empirical-idea-generator.md</code></li>
+        <li><code>skills/stata-regression-SKILL.md</code></li>
+        <li><code>projects/_project_template/notes/brainstorm.md</code></li>
+        <li><code>projects/_project_template/notes/research_plan.md</code></li>
+      </ul>
+    `
+      : selectedPack === 'advanced'
+      ? `
+        <ul>
+          <li><code>memory/global_notes.md</code></li>
+          <li><code>projects/_project_template/notes/01_project_overview.md</code></li>
+          <li><code>projects/_project_template/notes/05_research_plan.md</code></li>
+          <li><code>standards/notes_phase_standard.md</code></li>
+        </ul>
+      `
+      : '<p class="small">Select a pack to preview example files.</p>';
+
+  const zipBlock = selectedZipUrl
+    ? `<p><a href="${selectedZipUrl}" target="_blank">Download ${packLabel(selectedPack)} ZIP</a></p>`
+    : selectedPack
+      ? '<p><strong>ZIP link not configured for this pack.</strong></p>'
+      : '';
 
   const oneDriveBlock = hasOneDrive
-    ? `<p><a href="${distribution.oneDriveFolderUrlAdvanced}" target="_blank">Open Advanced starter on OneDrive</a></p>`
+    ? `<p><a href="${selectedOneDriveUrl}" target="_blank">Open ${packLabel(selectedPack)} on OneDrive</a></p>`
     : '';
 
   return {
     id: 'template',
-    title: 'Advanced Starter Pack',
+    title: 'Choose Starter Pack',
     html: `
-      <h2>Page 7: Advanced starter pack</h2>
-      <p>This is the full setup with your preferred workflow and file structure.</p>
-      ${advancedZipBlock}
+      <h2>Page 7: Choose your starter pack</h2>
+      <p>Pick one pack, then download it.</p>
+      <div class="choice-grid">
+        <button class="btn choice" data-pack="basic">Basic starter</button>
+        <button class="btn choice" data-pack="advanced">Advanced starter</button>
+      </div>
+      <p class="small">Current selection: <strong>${packLabel(selectedPack)}</strong></p>
+      ${selectedDescription}
+      ${zipBlock}
       ${oneDriveBlock}
-      <h3>What this pack includes</h3>
-      <ul>
-        <li><code>agents/</code>: specialist assistant instructions</li>
-        <li><code>skills/</code>: reusable workflows</li>
-        <li><code>memory/global_notes.md</code>: your workflow preferences</li>
-        <li><code>projects/_project_template/notes/</code>: numbered brainstorm files</li>
-        <li><code>templates/</code> and <code>standards/</code>: writing and project conventions</li>
-      </ul>
-      <p><strong>Example files:</strong></p>
-      <ul>
-        <li><code>projects/_project_template/notes/01_project_overview.md</code></li>
-        <li><code>projects/_project_template/notes/05_research_plan.md</code></li>
-        <li><code>memory/global_notes.md</code></li>
-        <li><code>skills/research-ideation-SKILL.md</code></li>
-      </ul>
+      <p><strong>Example files in selected pack:</strong></p>
+      ${selectedExamples}
       <ol>
-        <li>Download/extract the advanced starter.</li>
+        <li>Download/extract your selected pack.</li>
         <li>In ${editor}: <strong>File -> Open Folder</strong>.</li>
         <li>Select the extracted starter folder.</li>
       </ol>
-    `
+    `,
+    onRender: () => {
+      document.querySelectorAll('[data-pack]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.pack = btn.dataset.pack;
+          render();
+        });
+      });
+    }
   };
 }
 
 function profileStep() {
   const editor = editorLabel(state.editor);
+  const editorName = state.editor ? editor : 'your editor';
+  const shortcut = state.os === 'mac'
+    ? '<strong>Cmd + Shift + P</strong> on Mac'
+    : '<strong>Ctrl + Shift + P</strong> on Windows';
   const isCursor = state.editor === 'cursor';
   const selectedProfileUrl = isCursor ? distribution.cursorProfileUrl : distribution.vscodeProfileUrl;
   const hasProfileUrl = hasConfiguredUrl(selectedProfileUrl);
   const profileLink = hasProfileUrl
-    ? `<p><a href="${selectedProfileUrl}" target="_blank">Open ${editor} profile link</a></p>`
+    ? `<p><a href="${selectedProfileUrl}">Open ${editorName} profile link</a></p>`
     : `<p><strong>Profile link not configured yet.</strong> Set <code>distribution.${isCursor ? 'cursorProfileUrl' : 'vscodeProfileUrl'}</code> in <code>app.js</code>.</p>`;
 
   return {
     id: 'profile',
     title: 'Import Editor Profile',
     html: `
-      <h2>Page 8: Import ${editor} profile (optional)</h2>
-      <p>Profile import is optional.</p>
+      <h2>Page 8: Import ${editorName} profile (optional)</h2>
+      <p><strong>You selected ${editorName}.</strong> Importing a profile is optional, but it saves time by loading the same setup used in the workshop.</p>
+      <p><strong>Is this the wrong editor?</strong> Click one option below to switch.</p>
+      <div class="choice-grid">
+        <button class="btn choice" data-profile-editor="vscode">Use VS Code profile</button>
+        <button class="btn choice" data-profile-editor="cursor">Use Cursor profile</button>
+      </div>
+      <p class="small">Current profile type: <strong>${editorName}</strong></p>
       ${profileLink}
       <ol>
-        <li>In ${editor}, press <strong>Ctrl+Shift+P</strong>.</li>
+        <li>Open ${editorName}.</li>
+        <li>Press ${shortcut}.</li>
         <li>Run <strong>Profiles: Import Profile</strong>.</li>
-        <li>Paste/select your profile link and import.</li>
+        <li>Paste the profile link and complete the import.</li>
       </ol>
-    `
+      <p class="small">You can skip this step and continue. Your setup will still work.</p>
+    `,
+    onRender: () => {
+      document.querySelectorAll('[data-profile-editor]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.editor = btn.dataset.profileEditor;
+          render();
+        });
+      });
+    }
   };
 }
 
@@ -314,9 +379,13 @@ function githubStep() {
     id: 'github',
     title: 'Pair with GitHub',
     html: `
-      <h2>Page 9: Pair with GitHub (recommended backup)</h2>
-      <p>GitHub gives free version history and backup for your project files.</p>
+      <h2>Page 9: Pair with GitHub (beginner backup)</h2>
+      <p>GitHub is a free backup for your project files and gives you version history.</p>
+      <p>If you are new, ask Claude or Codex to guide you step-by-step.</p>
       <p><a href="https://github.com/" target="_blank">Create or sign in to GitHub</a></p>
+      <p><strong>Try pasting this into Claude/Codex chat:</strong></p>
+      <div class="code">I want to back up and pair my folders with Git. I am a beginner. Please explain each step, why it matters, and give me the exact commands for my computer.</div>
+      <p><strong>If you want direct commands:</strong></p>
       <div class="code">git init\ngit add .\ngit commit -m "Initial backup"\ngit branch -M main\ngit remote add origin https://github.com/YOUR_USER/YOUR_REPO.git\ngit push -u origin main</div>
     `
   };
@@ -407,6 +476,10 @@ nextBtn.addEventListener('click', () => {
   }
   if (step.id === 'choose-editor' && !state.editor) {
     alert('Select VS Code or Cursor first.');
+    return;
+  }
+  if (step.id === 'template' && !state.pack) {
+    alert('Select Basic or Advanced first.');
     return;
   }
   if (state.current < state.steps.length - 1) {
