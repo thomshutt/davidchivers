@@ -298,7 +298,7 @@ function templateStep() {
         <li>Open the folder in your IDE (for example: <strong>File > Open Folder</strong> in ${editor}).</li>
         <li>Select the extracted starter folder.</li>
       </ol>
-      ${learnBlock('Learn more', '<p>Basic is lighter and best for first-time users. Advanced includes extra preferences and workflow structure.</p>')}
+      ${learnBlock('Learn more', '<p>Once you have loaded a starter folder, ask your AI: "Please give me a quick overview of these folders and what each one is for."</p>')}
     `
   };
 }
