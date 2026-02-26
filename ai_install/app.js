@@ -339,38 +339,24 @@ function profileStep() {
   const selectedProfileUrl = isCursor ? distribution.cursorProfileUrl : distribution.vscodeProfileUrl;
   const hasProfileUrl = hasConfiguredUrl(selectedProfileUrl);
   const profileLink = hasProfileUrl
-    ? `<p><a href="${selectedProfileUrl}">Open ${editorName} profile link</a></p>`
-    : `<p><strong>Profile link not configured yet.</strong> Set <code>distribution.${isCursor ? 'cursorProfileUrl' : 'vscodeProfileUrl'}</code> in <code>app.js</code>.</p>`;
+    ? `<p><a href="${selectedProfileUrl}">Download ${editorName} profile</a></p>`
+    : `<p><strong>Missing:</strong> ${editorName} profile link is not configured. Set <code>distribution.${isCursor ? 'cursorProfileUrl' : 'vscodeProfileUrl'}</code> in <code>app.js</code>.</p>`;
 
   return {
     id: 'profile',
-    title: 'Import Editor Profile',
+    title: 'Download Profile',
     html: `
-      <h2>Page 8: Import ${editorName} profile (optional)</h2>
-      <p><strong>You selected ${editorName}.</strong> Importing a profile is optional, but it saves time by loading the same setup used in the workshop.</p>
-      <p><strong>Is this the wrong editor?</strong> Click one option below to switch.</p>
-      <div class="choice-grid">
-        <button class="btn choice" data-profile-editor="vscode">Use VS Code profile</button>
-        <button class="btn choice" data-profile-editor="cursor">Use Cursor profile</button>
-      </div>
-      <p class="small">Current profile type: <strong>${editorName}</strong></p>
+      <h2>Page 8: Download ${editorName} profile (optional)</h2>
+      <p>This step is optional. Use it to quickly load the same settings as the workshop.</p>
       ${profileLink}
       <ol>
         <li>Open ${editorName}.</li>
         <li>Press ${shortcut}.</li>
         <li>Run <strong>Profiles: Import Profile</strong>.</li>
-        <li>Paste the profile link and complete the import.</li>
+        <li>Paste the downloaded profile link and complete the import.</li>
       </ol>
       <p class="small">You can skip this step and continue. Your setup will still work.</p>
-    `,
-    onRender: () => {
-      document.querySelectorAll('[data-profile-editor]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          state.editor = btn.dataset.profileEditor;
-          render();
-        });
-      });
-    }
+    `
   };
 }
 
