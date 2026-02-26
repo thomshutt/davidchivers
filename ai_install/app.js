@@ -66,7 +66,7 @@ function hasConfiguredUrl(url) {
 function chooseOsStep() {
   const hasSlides = hasConfiguredUrl(distribution.teachingSlidesUrl);
   const slidesLink = hasSlides
-    ? `<p><a href="${distribution.teachingSlidesUrl}" target="_blank">Open workshop PowerPoint slides</a></p>`
+    ? `<p><a href="${distribution.teachingSlidesUrl}" target="_blank">Open powerpoint slides for Agentic Coding Introduction</a></p>`
     : '';
 
   return {
@@ -76,13 +76,13 @@ function chooseOsStep() {
       <h2>Page 1: Choose your computer type</h2>
       <p>Pick one to start your setup path.</p>
       <div class="callout callout--warn">This installation is for personal computers or computers where you have administrator install rights.</div>
-      ${slidesLink}
       <div class="choice-grid">
         <button class="btn choice" data-os="windows">Windows</button>
         <button class="btn choice" data-os="mac">Mac</button>
       </div>
       <p class="small">Current selection: <strong>${osLabel(state.os)}</strong></p>
       ${learnBlock('Learn more', '<p>This wizard combines quick actions with optional explanation. You can expand only what you need.</p>')}
+      ${slidesLink}
     `,
     onRender: () => {
       document.querySelectorAll('[data-os]').forEach(btn => {
