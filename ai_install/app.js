@@ -133,125 +133,101 @@ function chooseToolStep() {
   };
 }
 
-function chooseEditorStep() {
+function installEverythingStep() {
   const isMac = state.os === 'mac';
   const platformLabel = isMac ? 'Mac' : 'Windows';
-  const vscodeInstructions = isMac
-    ? '<ol><li>Download the macOS version.</li><li>Open the download.</li><li>Move VS Code to Applications.</li><li>Open VS Code.</li></ol>'
-    : '<ol><li>Download the Windows installer.</li><li>Run with default options.</li><li>Open VS Code.</li></ol>';
-  const cursorInstructions = isMac
-    ? '<ol><li>Download Cursor for macOS.</li><li>Open the download.</li><li>Move Cursor to Applications.</li><li>Open Cursor.</li></ol>'
-    : '<ol><li>Download Cursor for Windows.</li><li>Run with default options.</li><li>Open Cursor.</li></ol>';
-  const chosenEditorInstall =
-    state.editor === 'vscode'
-      ? vscodeInstructions
-      : state.editor === 'cursor'
-        ? cursorInstructions
-        : '';
+
+  // Build the winget / brew editor package name
+  const editorWinget = state.editor === 'cursor' ? 'Cursor.Cursor' : 'Microsoft.VisualStudioCode';
+  const editorBrew = state.editor === 'cursor' ? 'cursor' : 'visual-studio-code';
+  const editorName = editorLabel(state.editor) || 'your editor';
+
+  // Build agent npm commands
+  let agentCommands = '';
+  if (state.tool === 'codex') {
+    agentCommands = 'npm install -g @openai/codex\ncodex --login\ncodex';
+  } else if (state.tool === 'claude') {
+    agentCommands = 'npm install -g @anthropic-ai/claude-code\nclaude';
+  } else {
+    agentCommands = 'npm install -g @openai/codex\nnpm install -g @anthropic-ai/claude-code\ncodex --login\nclaude';
+  }
+
+  let fastBlock = '';
+  let manualBlock = '';
+  let verifyBlock = '';
+
+  if (isMac) {
+    fastBlock = `
+      <h3>Fast install (two commands)</h3>
+      <p>Open <strong>Terminal</strong> (Applications → Utilities → Terminal) and paste each line:</p>
+      <div class="code">xcode-select --install</div>
+      <p class="small">Wait for the popup to finish, then paste:</p>
+      <div class="code">brew install --cask ${editorBrew} && brew install node</div>
+      <p class="small">Don't have Homebrew? Install it first: <a href="https://brew.sh/" target="_blank">brew.sh</a></p>
+    `;
+    manualBlock = `
+      <h3>Manual install (if the above doesn't work)</h3>
+      <ol>
+        <li>Git: run <code>xcode-select --install</code> or download from <a href="https://git-scm.com/download/mac" target="_blank">git-scm.com</a></li>
+        <li>Node.js: <a href="https://nodejs.org/" target="_blank">nodejs.org</a> (choose <strong>LTS</strong>)</li>
+        <li>${editorName}: <a href="${state.editor === 'cursor' ? 'https://www.cursor.com/downloads' : 'https://code.visualstudio.com/Download'}" target="_blank">Download ${editorName}</a></li>
+      </ol>
+    `;
+  } else {
+    fastBlock = `
+      <h3>Fast install (one command)</h3>
+      <p>Open <strong>PowerShell</strong> and paste this single command:</p>
+      <div class="code">winget install ${editorWinget} Git.Git OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements</div>
+      <p class="small">This installs ${editorName}, Git, and Node.js in one step. After it finishes, <strong>close and reopen</strong> your terminal.</p>
+    `;
+    manualBlock = `
+      <h3>Manual install (if the above doesn't work)</h3>
+      <ol>
+        <li>${editorName}: <a href="${state.editor === 'cursor' ? 'https://www.cursor.com/downloads' : 'https://code.visualstudio.com/Download'}" target="_blank">Download ${editorName}</a></li>
+        <li>Git: <a href="https://git-scm.com/download/win" target="_blank">git-scm.com/download/win</a></li>
+        <li>Node.js: <a href="https://nodejs.org/" target="_blank">nodejs.org</a> (choose <strong>LTS</strong>)</li>
+      </ol>
+    `;
+  }
+
+  verifyBlock = `
+    <h3>Verify & install ${toolLabel(state.tool)}</h3>
+    <p>Open <strong>${editorName}</strong>, then open <strong>Terminal → New Terminal</strong> and paste:</p>
+    <div class="code">git --version\nnode -v\nnpm -v</div>
+    <p>If all three commands print a version number, paste these to install your AI agent:</p>
+    <div class="code">${agentCommands}</div>
+  `;
 
   return {
-    id: 'choose-editor',
-    title: 'Install Editor',
+    id: 'install-everything',
+    title: 'Install Everything',
     html: `
-      <h2>Page 3: Download VS Code or Cursor (${platformLabel})</h2>
-      <p>Choose one editor before continuing.</p>
+      <h2>Page 3: Install everything (${platformLabel})</h2>
+      <p>First, choose your editor:</p>
       <div class="choice-grid">
         <button class="btn choice ${state.editor === 'vscode' ? 'is-selected' : ''}" data-editor="vscode">VS Code</button>
         <button class="btn choice ${state.editor === 'cursor' ? 'is-selected' : ''}" data-editor="cursor">Cursor</button>
       </div>
       <p class="small">Current selection: <strong>${editorLabel(state.editor)}</strong></p>
-      <p><strong>Download links:</strong> <a href="https://code.visualstudio.com/Download" target="_blank">VS Code</a> or <a href="https://www.cursor.com/downloads" target="_blank">Cursor</a>.</p>
-      ${chosenEditorInstall}
-      ${learnBlock('Learn more', '<p>Cursor is based on VS Code and adds built-in AI features. It is easy to switch between VS Code and Cursor later.</p>')}
+      ${state.editor ? fastBlock + manualBlock + verifyBlock : '<p>Select an editor above to see the install command.</p>'}
+      ${learnBlock('Learn more',
+        '<p>Git tracks file changes. Node and npm install the AI command-line tools. ' +
+        (isMac
+          ? 'Homebrew is a popular Mac package manager — <a href="https://brew.sh/" target="_blank">brew.sh</a>.'
+          : '<code>winget</code> is built into Windows and installs software from the command line.') +
+        ' Cursor is based on VS Code and adds built-in AI features. You can switch editors later.</p>'
+      )}
     `,
     onRender: () => {
       document.querySelectorAll('[data-editor]').forEach(btn => {
         btn.addEventListener('click', () => {
           state.editor = btn.dataset.editor;
-          // Beginner flow: selecting an editor immediately continues to the next step.
           buildSteps();
-          state.current = state.steps.findIndex(s => s.id === 'install-git');
+          state.current = state.steps.findIndex(s => s.id === 'install-everything');
           render();
         });
       });
     }
-  };
-}
-
-function gitStep() {
-  const editor = editorLabel(state.editor);
-
-  if (state.os === 'mac') {
-    return {
-      id: 'install-git',
-      title: 'Install Git',
-      html: `
-        <h2>Page 4: Install Git (Mac)</h2>
-        <p>Git tracks file changes in your project.</p>
-        <div class="code">xcode-select --install</div>
-        <p>Alternative: <a href="https://git-scm.com/download/mac" target="_blank">https://git-scm.com/download/mac</a></p>
-        <p>In ${editor}, open <strong>Terminal -> New Terminal</strong>, then run:</p>
-        <div class="code">git --version</div>
-        ${learnBlock('Learn more', '<p>Git keeps a history of your files so you can back up work and return to earlier versions.</p>')}
-      `
-    };
-  }
-
-  return {
-    id: 'install-git',
-    title: 'Install Git',
-    html: `
-      <h2>Page 4: Install Git (Windows)</h2>
-      <p>Git tracks file changes in your project.</p>
-      <p>Install from: <a href="https://git-scm.com/download/win" target="_blank">https://git-scm.com/download/win</a></p>
-      <p>In ${editor}, open <strong>Terminal -> New Terminal</strong>, then run:</p>
-      <div class="code">git --version</div>
-      ${learnBlock('Learn more', '<p>Git keeps a history of your files so you can back up work and return to earlier versions.</p>')}
-    `
-  };
-}
-
-function nodeStep() {
-  const editor = editorLabel(state.editor);
-
-  return {
-    id: 'install-node',
-    title: 'Install Node.js',
-    html: `
-      <h2>Page 5: Install Node.js LTS (${osLabel(state.os)})</h2>
-      <p>Download from: <a href="https://nodejs.org/" target="_blank">https://nodejs.org/</a></p>
-      <ol>
-        <li>Install the LTS version.</li>
-        <li>In ${editor}, open <strong>Terminal -> New Terminal</strong>.</li>
-        <li>Run:</li>
-      </ol>
-      <div class="code">node -v\nnpm -v</div>
-      ${learnBlock('Learn more', '<p>Node and npm are needed to install Codex and Claude Code command line tools.</p>')}
-    `
-  };
-}
-
-function installAgentStep() {
-  const editor = editorLabel(state.editor);
-  let commands = '';
-
-  if (state.tool === 'codex') {
-    commands = `<div class="code">npm install -g @openai/codex\ncodex --login\ncodex</div>`;
-  } else if (state.tool === 'claude') {
-    commands = `<div class="code">npm install -g @anthropic-ai/claude-code\nclaude</div>`;
-  } else {
-    commands = `<div class="code">npm install -g @openai/codex\ncodex --login\ncodex\n\nnpm install -g @anthropic-ai/claude-code\nclaude</div>`;
-  }
-
-  return {
-    id: 'install-agent',
-    title: 'Install AI Agent',
-    html: `
-      <h2>Page 6: Install ${toolLabel(state.tool)}</h2>
-      <p>Paste these commands into the <strong>${editor} terminal</strong> (Terminal -> New Terminal).</p>
-      ${commands}
-      ${learnBlock('Learn more', '<p>If a command fails, copy the full error and paste it into ChatGPT or Claude for the next exact fix command.</p>')}
-    `
   };
 }
 
@@ -279,7 +255,7 @@ function templateStep() {
     id: 'template',
     title: 'Basic Starter Folder Setup (Optional)',
     html: `
-      <h2>Page 7: Basic starter folder setup (optional)</h2>
+      <h2>Page 4: Basic starter folder setup (optional)</h2>
       <p>Start with Basic if you are new. You can try both.</p>
 
       <h3>Basic starter folder</h3>
@@ -327,7 +303,7 @@ function profileStep() {
     id: 'profile',
     title: 'Download Profile',
     html: `
-      <h2>Page 8: Download ${editorName} profile (optional)</h2>
+      <h2>Page 5: Download ${editorName} profile (optional)</h2>
       <p>This step is optional. Use it to quickly load the same settings as the workshop.</p>
       ${profileLink}
       <ol>
@@ -347,7 +323,7 @@ function githubStep() {
     id: 'github',
     title: 'Pair with GitHub',
     html: `
-      <h2>Page 9: Pair with GitHub (beginner backup)</h2>
+      <h2>Page 6: Pair with GitHub (beginner backup)</h2>
       <p>GitHub is a free backup for your project files and gives you version history.</p>
       <p>If you are new, ask Claude or Codex to guide you step-by-step.</p>
       <p><a href="https://github.com/" target="_blank">Create or sign in to GitHub</a></p>
@@ -365,7 +341,7 @@ function appendixStep() {
     id: 'appendix',
     title: 'Glossary',
     html: `
-      <h2>Page 10: Quick glossary</h2>
+      <h2>Page 7: Quick glossary</h2>
       <ul>
         <li><strong>IDE:</strong> The app where you edit code (for example VS Code or Cursor).</li>
         <li><strong>Terminal:</strong> Text window where you run commands.</li>
@@ -400,10 +376,7 @@ function buildSteps() {
   state.steps = [
     chooseOsStep(),
     chooseToolStep(),
-    chooseEditorStep(),
-    gitStep(),
-    nodeStep(),
-    installAgentStep(),
+    installEverythingStep(),
     templateStep(),
     profileStep(),
     githubStep(),
@@ -464,7 +437,7 @@ nextBtn.addEventListener('click', () => {
     alert('Select Codex, Claude, or Both first.');
     return;
   }
-  if (step.id === 'choose-editor' && !state.editor) {
+  if (step.id === 'install-everything' && !state.editor) {
     alert('Select VS Code or Cursor first.');
     return;
   }
