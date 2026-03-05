@@ -1,6 +1,6 @@
 ﻿const state = {
   os: null,
-  tool: 'gemini',
+  tool: null,
   editor: null,
   pack: null,
   current: 0,
@@ -87,6 +87,8 @@ function osLabel(os) {
 }
 
 function toolLabel(tool) {
+  if (tool === 'codex') return 'Codex';
+  if (tool === 'claude') return 'Claude Code';
   if (tool === 'gemini') return 'Gemini CLI';
   return 'Not selected';
 }
@@ -163,13 +165,15 @@ function chooseToolStep() {
     title: 'Choose AI Agent',
     html: `
       <h2>Page 2: Choose your AI agent</h2>
-      <p>This installer uses <strong>Gemini CLI</strong>.</p>
-      <p><strong>Account needed:</strong> a Google account and a Gemini API key from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a>.</p>
+      <p>Pick one AI coding tool to install first.</p>
+      <p><strong>Accounts:</strong> Codex uses ChatGPT, Claude Code uses Anthropic/Claude, and Gemini CLI uses Google AI Studio.</p>
       <div class="choice-grid">
-        <button class="btn choice is-selected" data-tool="gemini">Gemini CLI</button>
+        <button class="btn choice ${state.tool === 'codex' ? 'is-selected' : ''}" data-tool="codex">Codex</button>
+        <button class="btn choice ${state.tool === 'claude' ? 'is-selected' : ''}" data-tool="claude">Claude Code</button>
+        <button class="btn choice ${state.tool === 'gemini' ? 'is-selected' : ''}" data-tool="gemini">Gemini CLI</button>
       </div>
       <p class="small">Current selection: <strong>${toolLabel(state.tool)}</strong></p>
-      ${learnBlock('Learn more', '<p>Gemini CLI runs in your terminal and can help with coding and setup tasks.</p>')}
+      ${learnBlock('Learn more', '<p>Install one now and add the others later if you want.</p>')}
     `,
     onRender: () => {
       document.querySelectorAll('[data-tool]').forEach(btn => {
@@ -288,57 +292,89 @@ function restartTerminalStep() {
 
 function installAgentStep() {
   const editorName = editorLabel(state.editor) || 'your editor';
-  const agentCommands = 'npm install -g @google/gemini-cli@latest';
+  let installCommand = '';
+  let nextStepCopy = '';
+  let note = '';
+
+  if (state.tool === 'codex') {
+    installCommand = 'npm install -g @openai/codex';
+    nextStepCopy = 'sign in to Codex and start it.';
+    note = 'This installs the latest Codex CLI.';
+  } else if (state.tool === 'claude') {
+    installCommand = 'npm install -g @anthropic-ai/claude-code';
+    nextStepCopy = 'sign in to Claude Code and start it.';
+    note = 'This installs the latest Claude Code CLI.';
+  } else {
+    installCommand = 'npm install -g @google/gemini-cli@latest';
+    nextStepCopy = 'set your Gemini API key permanently, then run Gemini.';
+    note = 'This installs or updates Gemini CLI to the latest version.';
+  }
 
   return {
     id: 'install-agent',
     title: 'Install AI agent',
     html: `
       <h2>Page 5: Install ${toolLabel(state.tool)}</h2>
-      <p>Step 3 installed prerequisites and step 4 restarted your terminal. Now install Gemini CLI.</p>
+      <p>Step 3 installed prerequisites and step 4 restarted your terminal. Now install ${toolLabel(state.tool)}.</p>
       <p>Open <strong>${editorName}</strong>, then open <strong>Terminal → New Terminal</strong> and run:</p>
-      <div class="code">${agentCommands}</div>
-      <p class="small">You can run this same command any time later to update to the latest Gemini CLI.</p>
-      <p><strong>Next page:</strong> set your Gemini API key, then run <code>gemini</code>.</p>
+      <div class="code">${installCommand}</div>
+      <p class="small">${note}</p>
+      <p><strong>Next page:</strong> ${nextStepCopy}</p>
     `
   };
 }
 
-function geminiApiKeyStep() {
+function authStep() {
+  if (state.tool === 'codex') {
+    return {
+      id: 'auth-step',
+      title: 'Sign in to Codex',
+      html: `
+        <h2>Page 6: Sign in to Codex</h2>
+        <p>Run this in terminal, then complete the login flow in your browser:</p>
+        <div class="code">codex --login</div>
+        <p>Start Codex:</p>
+        <div class="code">codex</div>
+      `
+    };
+  }
+
+  if (state.tool === 'claude') {
+    return {
+      id: 'auth-step',
+      title: 'Sign in to Claude Code',
+      html: `
+        <h2>Page 6: Sign in to Claude Code</h2>
+        <p>Run Claude Code and follow the sign-in prompts:</p>
+        <div class="code">claude</div>
+      `
+    };
+  }
+
   const isMac = state.os === 'mac';
-  const setTempKey = isMac
-    ? 'export GEMINI_API_KEY="PASTE_KEY_HERE"'
-    : '$env:GEMINI_API_KEY="PASTE_KEY_HERE"';
   const setPersistentKey = isMac
     ? "echo 'export GEMINI_API_KEY=\"PASTE_KEY_HERE\"' >> ~/.zshrc\nsource ~/.zshrc"
     : 'setx GEMINI_API_KEY "PASTE_KEY_HERE"';
-  const verifyKey = isMac
-    ? 'echo $GEMINI_API_KEY'
-    : 'echo $env:GEMINI_API_KEY';
 
   return {
-    id: 'gemini-api-key',
+    id: 'auth-step',
     title: 'Set Gemini API key',
     html: `
-      <h2>Page 6: Set your Gemini API key (simple)</h2>
+      <h2>Page 6: Set your Gemini API key (permanent)</h2>
       <ol>
         <li>Open <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio API keys</a>.</li>
         <li>Sign in with your Google account.</li>
         <li>Click <strong>Create API key</strong>.</li>
         <li>Copy the new key.</li>
       </ol>
-      <p>Back in terminal, set it for this session:</p>
-      <div class="code">${setTempKey}</div>
-      <p>Optional: set it permanently so it is ready next time:</p>
+      <p>Back in terminal, set it permanently (single copy command):</p>
       <div class="code">${setPersistentKey}</div>
-      <p>Check it is set:</p>
-      <div class="code">${verifyKey}</div>
-      <p>Then start Gemini:</p>
+      <p>Then close and reopen terminal, and start Gemini:</p>
       <div class="code">gemini</div>
       <div class="callout callout--warn">
         <strong>Important:</strong> never paste API keys into GitHub commits or shared files.
       </div>
-      ${learnBlock('Learn more', '<p>If you use <code>setx</code> on Windows, close and reopen terminal to load it into new sessions.</p>')}
+      ${learnBlock('Learn more', '<p>Gemini has a free tier for light usage and paid usage for higher limits. If you need more usage, upgrade later.</p>')}
     `
   };
 }
@@ -367,7 +403,7 @@ function templateStep() {
     id: 'template',
       title: 'Basic Starter Folder Setup (Optional)',
       html: `
-      <h2>Page 7: Basic starter folder setup (optional)</h2>
+      <h2>Starter folder setup (optional)</h2>
       <p>Start with Basic if you are new. You can try both.</p>
 
       <h3>Basic starter folder</h3>
@@ -415,7 +451,7 @@ function profileStep() {
     id: 'profile',
     title: 'Import Profile',
     html: `
-      <h2>Page 8: Import ${editorName} profile (optional)</h2>
+      <h2>Import ${editorName} profile (optional)</h2>
       <p>This step is optional. Use it to quickly load the same settings as the workshop.</p>
       ${profileLink}
       <ol>
@@ -431,15 +467,17 @@ function profileStep() {
 }
 
 function githubStep() {
+  const assistantName = state.tool === 'claude' ? 'Claude' : state.tool === 'gemini' ? 'Gemini' : 'Codex';
+
   return {
     id: 'github',
     title: 'Pair with GitHub',
     html: `
-      <h2>Page 9: Pair with GitHub (beginner backup)</h2>
+      <h2>Pair with GitHub (beginner backup)</h2>
       <p>GitHub is a free backup for your project files and gives you version history.</p>
-      <p>If you are new, ask Gemini to guide you step-by-step.</p>
+      <p>If you are new, ask ${toolLabel(state.tool)} to guide you step-by-step.</p>
       <p><a href="https://github.com/" target="_blank">Create or sign in to GitHub</a></p>
-      <p><strong>Try pasting this into Gemini:</strong></p>
+      <p><strong>Try pasting this into ${assistantName}:</strong></p>
       <div class="code">I want to back up and pair my folders with Git. I am a beginner. Please explain each step, why it matters, and give me the exact commands for my computer.</div>
       <p><strong>If you want direct commands:</strong></p>
       <div class="code">git init\ngit add .\ngit commit -m "Initial backup"\ngit branch -M main\ngit remote add origin https://github.com/YOUR_USER/YOUR_REPO.git\ngit push -u origin main</div>
@@ -453,7 +491,7 @@ function appendixStep() {
     id: 'appendix',
     title: 'Glossary',
     html: `
-      <h2>Page 10: Quick glossary</h2>
+      <h2>Quick glossary</h2>
       <ul>
         <li><strong>IDE:</strong> The app where you edit code (for example VS Code or Cursor).</li>
         <li><strong>Terminal:</strong> Text window where you run commands.</li>
@@ -472,6 +510,8 @@ function appendixStep() {
 }
 
 function doneStep() {
+  const assistantName = state.tool === 'claude' ? 'Claude' : state.tool === 'gemini' ? 'Gemini' : 'Codex';
+
   return {
     id: 'done',
     title: 'Done',
@@ -479,7 +519,7 @@ function doneStep() {
       <h2>Setup complete</h2>
       <p>You finished the <strong>${osLabel(state.os)}</strong> path with <strong>${toolLabel(state.tool)}</strong> in <strong>${editorLabel(state.editor)}</strong>.</p>
       <p class="small">Press <strong>Restart</strong> to run the wizard again.</p>
-      ${learnBlock('Learn more', '<p>Next step: open your project folder and ask Gemini for one small task to get comfortable.</p>')}
+      ${learnBlock('Learn more', `<p>Next step: open your project folder and ask ${assistantName} for one small task to get comfortable.</p>`)}
     `
   };
 }
@@ -491,7 +531,7 @@ function buildSteps() {
     installEverythingStep(),
     restartTerminalStep(),
     installAgentStep(),
-    geminiApiKeyStep(),
+    authStep(),
     templateStep(),
     profileStep(),
     githubStep(),
@@ -523,7 +563,7 @@ function render() {
 
 function restartWizard() {
   state.os = null;
-  state.tool = 'gemini';
+  state.tool = null;
   state.editor = null;
   state.pack = null;
   state.current = 0;
@@ -547,6 +587,10 @@ nextBtn.addEventListener('click', () => {
   const step = state.steps[state.current];
   if (step.id === 'choose-os' && !state.os) {
     alert('Select Windows or Mac first.');
+    return;
+  }
+  if (step.id === 'choose-tool' && !state.tool) {
+    alert('Select Codex, Claude Code, or Gemini CLI first.');
     return;
   }
   if (step.id === 'install-prereqs' && !state.editor) {
