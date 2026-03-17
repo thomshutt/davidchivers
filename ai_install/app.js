@@ -18,7 +18,7 @@ const distribution = {
   oneDriveFolderUrlAdvanced: '',
   vscodeProfileUrl: 'https://vscode.dev/editor/profile/github/0cf6696b0aa251846a9b1ed761267f88',
   cursorProfileUrl: 'cursor://profile/github/0cf6696b0aa251846a9b1ed761267f88',
-  teachingSlidesUrl: 'https://1drv.ms/p/c/34def9d130aed1a9/IQBwHWaK-I16T7yC88Wf80p5AdKUKL3gW8454f3iwOOWwCk?e=lDNPKN',
+  teachingSlidesUrl: '/ai_install/slides/ai_coding_agents_workshop_slides.pptx',
   githubEducationUrl: 'https://education.github.com/pack'
 };
 
@@ -407,18 +407,20 @@ function templateStep() {
 
   return {
     id: 'template',
-      title: 'Basic Starter Folder Setup (Optional)',
+      title: 'Starter Folder Setup (Optional)',
       html: `
-      <h2>Starter folder setup (optional)</h2>
+      <h2>Page 7: Starter folder setup (optional)</h2>
       <p>Start with Basic if you are new. You can try both.</p>
 
       <h3>Basic starter folder</h3>
-      <p>This includes a folder with core <code>agents/</code> and <code>skills/</code>, plus a simple project template.</p>
+      <p>Best if you want fewer moving parts. Open <code>README.md</code> first, then <code>memory/README.md</code>.</p>
+      <p class="small">Includes core <code>agents/</code>, core <code>skills/</code>, a simple project template, and referee-response templates.</p>
       ${basicZipBlock}
       ${basicOneDriveBlock}
 
       <h3>Full starter folder</h3>
-      <p>This includes everything in Basic plus profile-style preferences and workflow settings that may be helpful.</p>
+      <p>Best if you want stronger defaults and more structure. Open <code>README.md</code> first, then <code>memory/global_notes.md</code>.</p>
+      <p class="small">Includes everything in Basic plus more agents/skills, standards, numbered notes, and workflow preferences.</p>
       <div class="callout callout--warn">
         <p><strong>Warning for Full starter terminal presets:</strong></p>
         <ul>
@@ -432,8 +434,9 @@ function templateStep() {
 
       <ol>
         <li>Download and extract the pack you want to test.</li>
-        <li>Open the folder in your IDE (for example: <strong>File > Open Folder</strong> in ${editor}).</li>
-        <li>Select the extracted starter folder.</li>
+        <li>Open the extracted folder in your IDE (for example: <strong>File > Open Folder</strong> in ${editor}).</li>
+        <li>Read the root <code>README.md</code>.</li>
+        <li>Copy <code>projects/_project_template/</code> to start a real project.</li>
       </ol>
       ${learnBlock('Learn more', '<p>Once you have loaded a starter folder, ask your AI: "Please give me a quick overview of these folders and what each one is for."</p>')}
     `
@@ -457,7 +460,7 @@ function profileStep() {
     id: 'profile',
     title: 'Import Profile',
     html: `
-      <h2>Import ${editorName} profile (optional)</h2>
+      <h2>Page 8: Import ${editorName} profile (optional)</h2>
       <p>This step is optional. Use it to quickly load the same settings as the workshop.</p>
       ${profileLink}
       <ol>
@@ -479,7 +482,7 @@ function githubStep() {
     id: 'github',
     title: 'Pair with GitHub',
     html: `
-      <h2>Pair with GitHub (beginner backup)</h2>
+      <h2>Page 9: Pair with GitHub (beginner backup)</h2>
       <p>GitHub is a free backup for your project files and gives you version history.</p>
       <p>If you are new, ask ${toolLabel(state.tool)} to guide you step-by-step.</p>
       <p><a href="https://github.com/" target="_blank">Create or sign in to GitHub</a></p>
@@ -497,7 +500,7 @@ function appendixStep() {
     id: 'appendix',
     title: 'Glossary',
     html: `
-      <h2>Quick glossary</h2>
+      <h2>Page 10: Quick glossary</h2>
       <ul>
         <li><strong>IDE:</strong> The app where you edit code (for example VS Code or Cursor).</li>
         <li><strong>Terminal:</strong> Text window where you run commands.</li>
