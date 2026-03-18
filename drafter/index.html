@@ -526,7 +526,19 @@ const DELETED_KEY = 'drb_deleted';
 const DataService = {
   load() {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) { try { return JSON.parse(raw); } catch(e) {} }
+    if (raw) {
+      try {
+        const saved = JSON.parse(raw);
+        // Merge in any new defaults that aren't already saved
+        const savedIds = new Set(saved.map(r => r.id));
+        const newDefaults = DEFAULT_RESPONSES.filter(r => !savedIds.has(r.id));
+        if (newDefaults.length > 0) {
+          for (const r of newDefaults) saved.push(JSON.parse(JSON.stringify(r)));
+          this.save(saved);
+        }
+        return saved;
+      } catch(e) {}
+    }
     const data = JSON.parse(JSON.stringify(DEFAULT_RESPONSES));
     this.save(data);
     return data;
