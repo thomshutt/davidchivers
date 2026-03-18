@@ -121,8 +121,8 @@ body {
 
 /* ── Sidebar ── */
 .sidebar {
-  width: 230px;
-  min-width: 230px;
+  width: 300px;
+  min-width: 300px;
   background: #fff;
   border-right: 1px solid #e2e8f0;
   overflow-y: auto;
@@ -422,6 +422,24 @@ body {
   font-family: inherit;
   border: 1px solid #e2e8f0;
 }
+.img-upload-area {
+  border: 2px dashed #cbd5e0;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+.img-upload-area:hover, .img-upload-area.dragover { border-color: #2b4c7e; background: #f7fafc; }
+.img-upload-placeholder { color: #a0aec0; font-size: 13px; padding: 12px 0; }
+.img-remove-btn {
+  margin-top: 8px;
+  background: #fff; border: 1px solid #e2e8f0; color: #e53e3e; font-size: 12px;
+  padding: 4px 12px; border-radius: 4px; cursor: pointer;
+}
+.img-remove-btn:hover { background: #fff5f5; }
+.card-img { max-width: 100%; border-radius: 4px; margin-top: 8px; }
 .modal-save { background: #2b4c7e; color: #fff; border-color: #2b4c7e; }
 .modal-save:hover { background: #1a365d; }
 .modal-cancel { background: #fff; color: #4a5568; }
@@ -496,6 +514,13 @@ body {
     <input type="text" id="fTitle" placeholder="Short descriptive title">
     <label>Reply text</label>
     <textarea id="fReplyText" placeholder="Enter the reply text..."></textarea>
+    <label>Screenshot (optional)</label>
+    <div class="img-upload-area" id="imgUploadArea">
+      <div class="img-upload-placeholder" id="imgPlaceholder">Paste, drag or click to add a screenshot</div>
+      <img id="imgPreview" style="display:none; max-width:100%; border-radius:4px;">
+      <input type="file" id="imgFileInput" accept="image/*" style="display:none;">
+      <button type="button" class="img-remove-btn" id="imgRemoveBtn" style="display:none;">Remove</button>
+    </div>
     <label>Keywords (comma-separated)</label>
     <input type="text" id="fKeywords" placeholder="extension, deadline, granted">
     <div class="modal-actions">
@@ -599,6 +624,42 @@ const DataService = {
   nextId() { return 'r' + Date.now() + Math.random().toString(36).slice(2,6); }
 };
 
+// ── Image compression ──
+function compressImage(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX = 400;
+        let w = img.width, h = img.height;
+        if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.6));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function compressDataUrl(dataUrl) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX = 400;
+      let w = img.width, h = img.height;
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.6));
+    };
+    img.src = dataUrl;
+  });
+}
+
 // ── State ──
 let allResponses = [];
 let deleted = [];
@@ -625,6 +686,12 @@ const fReplyText = document.getElementById('fReplyText');
 const fKeywords = document.getElementById('fKeywords');
 const catList = document.getElementById('catList');
 const subcatList = document.getElementById('subcatList');
+const imgUploadArea = document.getElementById('imgUploadArea');
+const imgPlaceholder = document.getElementById('imgPlaceholder');
+const imgPreview = document.getElementById('imgPreview');
+const imgFileInput = document.getElementById('imgFileInput');
+const imgRemoveBtn = document.getElementById('imgRemoveBtn');
+let pendingImage = null;
 
 let toastTimer;
 function showToast(msg) {
@@ -697,7 +764,9 @@ function buildCards() {
   for (const r of results) {
     h += '<div class="card" data-cardid="' + r.id + '"><div class="card-title-row"><div class="card-title">' + esc(r.title) + '</div><button class="copy-btn" data-id="' + r.id + '">Copy</button>';
     if (editMode) h += ' <button class="edit-btn" data-id="' + r.id + '">Edit</button> <button class="delete-btn" data-id="' + r.id + '">Delete</button>';
-    h += '</div><div class="card-tag">' + esc(r.category) + ' \u203A ' + esc(r.subcategory) + '</div><div class="card-text collapsed">' + safeHtml(r.replyText) + '</div><span class="card-toggle" data-state="collapsed">Show full text</span></div>';
+    h += '</div><div class="card-tag">' + esc(r.category) + ' \u203A ' + esc(r.subcategory) + '</div><div class="card-text collapsed">' + safeHtml(r.replyText) + '</div>';
+    if (r.image) h += '<img class="card-img" src="' + r.image + '">';
+    h += '<span class="card-toggle" data-state="collapsed">Show full text</span></div>';
   }
   cardsPanel.innerHTML = h;
 }
@@ -721,9 +790,19 @@ function updateDeletedLink() {
 }
 
 // ── Modal ──
+function setModalImage(dataUrl) {
+  pendingImage = dataUrl;
+  imgPreview.src = dataUrl; imgPreview.style.display = 'block';
+  imgPlaceholder.style.display = 'none'; imgRemoveBtn.style.display = '';
+}
+function clearModalImage() {
+  pendingImage = null;
+  imgPreview.src = ''; imgPreview.style.display = 'none';
+  imgPlaceholder.style.display = ''; imgRemoveBtn.style.display = 'none';
+}
 function openModal(response) {
-  if (response) { editingId = response.id; modalTitle.textContent = 'Edit response'; fCategory.value = response.category; fSubcategory.value = response.subcategory; fTitle.value = response.title; fReplyText.value = response.replyText; fKeywords.value = response.keywords||''; }
-  else { editingId = null; modalTitle.textContent = 'Add new response'; fCategory.value = ''; fSubcategory.value = ''; fTitle.value = ''; fReplyText.value = ''; fKeywords.value = ''; }
+  if (response) { editingId = response.id; modalTitle.textContent = 'Edit response'; fCategory.value = response.category; fSubcategory.value = response.subcategory; fTitle.value = response.title; fReplyText.value = response.replyText; fKeywords.value = response.keywords||''; if(response.image){setModalImage(response.image);}else{clearModalImage();} }
+  else { editingId = null; modalTitle.textContent = 'Add new response'; fCategory.value = ''; fSubcategory.value = ''; fTitle.value = ''; fReplyText.value = ''; fKeywords.value = ''; clearModalImage(); }
   catList.innerHTML = [...new Set(allResponses.map(r=>r.category))].map(c=>'<option value="'+esc(c)+'">').join('');
   subcatList.innerHTML = [...new Set(allResponses.map(r=>r.subcategory))].map(s=>'<option value="'+esc(s)+'">').join('');
   modalOverlay.classList.add('open'); fCategory.focus();
@@ -732,8 +811,8 @@ function closeModal() { modalOverlay.classList.remove('open'); editingId = null;
 function saveModal() {
   const cat = fCategory.value.trim(), sub = fSubcategory.value.trim(), title = fTitle.value.trim(), text = fReplyText.value.trim(), kw = fKeywords.value.trim();
   if (!cat || !title || !text) { showToast('Please fill in category, title, and reply text'); return; }
-  if (editingId) { const r = allResponses.find(x=>x.id===editingId); if(r){r.category=cat;r.subcategory=sub;r.title=title;r.replyText=text;r.keywords=kw;} showToast('Response updated'); }
-  else { allResponses.push({id:DataService.nextId(),category:cat,subcategory:sub||'General',title,replyText:text,keywords:kw,sortOrder:allResponses.filter(r=>r.category===cat).reduce((m,r)=>Math.max(m,r.sortOrder||0),0)+1}); showToast('Response added'); }
+  if (editingId) { const r = allResponses.find(x=>x.id===editingId); if(r){r.category=cat;r.subcategory=sub;r.title=title;r.replyText=text;r.keywords=kw;r.image=pendingImage||null;} showToast('Response updated'); }
+  else { allResponses.push({id:DataService.nextId(),category:cat,subcategory:sub||'General',title,replyText:text,keywords:kw,image:pendingImage||null,sortOrder:allResponses.filter(r=>r.category===cat).reduce((m,r)=>Math.max(m,r.sortOrder||0),0)+1}); showToast('Response added'); }
   DataService.save(allResponses); closeModal(); render();
 }
 
@@ -746,7 +825,11 @@ sidebar.addEventListener('click', e => {
     const r = allResponses.find(x=>x.id===lc.dataset.copyid);
     if (!r) return;
     const plain = r.replyText.replace(/<a\s[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/g,'$2 ($1)').replace(/<[^>]+>/g,'');
-    navigator.clipboard.writeText(plain).then(()=>{lc.classList.add('copied');lc.innerHTML='&#10003;';setTimeout(()=>{lc.classList.remove('copied');lc.innerHTML='&copy;';},1200);}).catch(()=>showToast('Copy failed'));
+    const html = r.replyText.replace(/\n/g,'<br>') + (r.image ? '<br><img src="'+r.image+'">' : '');
+    const onOk = ()=>{lc.classList.add('copied');lc.innerHTML='&#10003;';setTimeout(()=>{lc.classList.remove('copied');lc.innerHTML='&copy;';},1200);};
+    try {
+      navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([plain],{type:'text/plain'})})]).then(onOk).catch(()=>navigator.clipboard.writeText(plain).then(onOk));
+    } catch(e) { navigator.clipboard.writeText(plain).then(onOk).catch(()=>showToast('Copy failed')); }
     return;
   }
   // Expand/collapse arrow
@@ -773,7 +856,17 @@ searchBox.addEventListener('input', () => { searchQuery = searchBox.value.trim()
 // ── Events: cards ──
 cardsPanel.addEventListener('click', e => {
   const cp = e.target.closest('.copy-btn');
-  if (cp) { const r=allResponses.find(x=>x.id===cp.dataset.id); if(!r)return; const plain=r.replyText.replace(/<a\s[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/g,'$2 ($1)').replace(/<[^>]+>/g,''); navigator.clipboard.writeText(plain).then(()=>{cp.textContent='Copied!';cp.classList.add('copied');setTimeout(()=>{cp.textContent='Copy';cp.classList.remove('copied');},1500);}).catch(()=>showToast('Copy failed')); return; }
+  if (cp) {
+    const r=allResponses.find(x=>x.id===cp.dataset.id); if(!r)return;
+    const plain=r.replyText.replace(/<a\s[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/g,'$2 ($1)').replace(/<[^>]+>/g,'');
+    const html=r.replyText.replace(/\n/g,'<br>') + (r.image ? '<br><img src="'+r.image+'">' : '');
+    try {
+      const blob = new Blob([html], {type:'text/html'});
+      const plainBlob = new Blob([plain], {type:'text/plain'});
+      navigator.clipboard.write([new ClipboardItem({'text/html':blob,'text/plain':plainBlob})]).then(()=>{cp.textContent='Copied!';cp.classList.add('copied');setTimeout(()=>{cp.textContent='Copy';cp.classList.remove('copied');},1500);}).catch(()=>{navigator.clipboard.writeText(plain).then(()=>{cp.textContent='Copied!';cp.classList.add('copied');setTimeout(()=>{cp.textContent='Copy';cp.classList.remove('copied');},1500);});});
+    } catch(e) { navigator.clipboard.writeText(plain).then(()=>{cp.textContent='Copied!';cp.classList.add('copied');setTimeout(()=>{cp.textContent='Copy';cp.classList.remove('copied');},1500);}).catch(()=>showToast('Copy failed')); }
+    return;
+  }
   const ed = e.target.closest('.edit-btn');
   if (ed) { const r=allResponses.find(x=>x.id===ed.dataset.id); if(r)openModal(r); return; }
   const del = e.target.closest('.delete-btn');
@@ -793,6 +886,26 @@ deletedLink.addEventListener('click', () => { showDeleted=!showDeleted; filter={
 document.getElementById('modalCancel').addEventListener('click', closeModal);
 document.getElementById('modalSave').addEventListener('click', saveModal);
 modalOverlay.addEventListener('click', e => { if(e.target===modalOverlay)closeModal(); });
+
+// ── Events: image upload ──
+imgUploadArea.addEventListener('click', e => { if(!e.target.closest('.img-remove-btn')) imgFileInput.click(); });
+imgFileInput.addEventListener('change', async () => { if(imgFileInput.files[0]){setModalImage(await compressImage(imgFileInput.files[0]));} imgFileInput.value=''; });
+imgRemoveBtn.addEventListener('click', e => { e.stopPropagation(); clearModalImage(); });
+imgUploadArea.addEventListener('dragover', e => { e.preventDefault(); imgUploadArea.classList.add('dragover'); });
+imgUploadArea.addEventListener('dragleave', () => { imgUploadArea.classList.remove('dragover'); });
+imgUploadArea.addEventListener('drop', async e => { e.preventDefault(); imgUploadArea.classList.remove('dragover'); const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/'))setModalImage(await compressImage(f)); });
+// Paste image anywhere in modal
+modalOverlay.addEventListener('paste', async e => {
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      e.preventDefault();
+      setModalImage(await compressImage(item.getAsFile()));
+      return;
+    }
+  }
+});
 
 // ── Events: export/import/reset ──
 document.getElementById('exportBtn').addEventListener('click', () => {
