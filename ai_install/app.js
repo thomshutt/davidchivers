@@ -280,6 +280,9 @@ function installEverythingStep() {
 
 function restartTerminalStep() {
   const editorName = editorLabel(state.editor) || 'your editor';
+  const extraRestartNote = state.tool === 'gemini'
+    ? '<p class="small">If Gemini still cannot find your API key after you set it, fully quit and reopen the IDE so the integrated terminal picks up the new environment variable.</p>'
+    : `<p class="small">No need to restart ${editorName}.</p>`;
 
   return {
     id: 'restart-terminal',
@@ -291,7 +294,7 @@ function restartTerminalStep() {
         <li>Close the terminal window/tab you used in step 3.</li>
         <li>Open a fresh terminal: <strong>Terminal → New Terminal</strong>.</li>
       </ol>
-      <p class="small">No need to restart ${editorName}.</p>
+      ${extraRestartNote}
     `
   };
 }
