@@ -161,14 +161,19 @@ body {
   gap: 6px;
 }
 .cat-header .arrow {
-  display: inline-block;
-  width: 14px;
-  font-size: 10px;
-  color: #a0aec0;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 9px;
+  color: #667;
   flex-shrink: 0;
-  transition: transform 0.15s;
+  border-radius: 4px;
+  transition: background 0.15s;
 }
+.cat-header .arrow:not(.no-toggle):hover { background: #e2e8f0; }
+.cat-header .arrow.no-toggle { color: #cbd5e0; font-size: 6px; }
 .cat-header .label { flex: 1; }
 .cat-header .count {
   font-size: 11px;
@@ -183,15 +188,29 @@ body {
 .subcat-list.expanded { display: block; }
 
 .subcat-item {
-  padding: 5px 16px 5px 38px;
+  padding: 5px 16px 5px 34px;
   font-size: 12px;
   color: #718096;
   cursor: pointer;
   user-select: none;
   border-left: 3px solid transparent;
+  position: relative;
+}
+.subcat-item::before {
+  content: '';
+  position: absolute;
+  left: 22px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #cbd5e0;
+  transform: translateY(-50%);
 }
 .subcat-item:hover { background: #f7fafc; }
+.subcat-item:hover::before { background: #a0aec0; }
 .subcat-item.active { background: #ebf4ff; font-weight: 600; color: #1a365d; border-left-color: #2b4c7e; }
+.subcat-item.active::before { background: #2b4c7e; }
 
 /* ── Cards panel ── */
 .cards-panel {
@@ -493,7 +512,7 @@ const DEFAULT_RESPONSES = [
   {"id":"faq04","category":"Resits","subcategory":"General","title":"What are the resit rules for Level 1 students","replyText":"Important, first please, refer to the <a href=\"https://www.dur.ac.uk/resources/faculty.handbook/studentsurvivalguide/2015_Level_1-3_Progression.pdf\" target=\"_blank\">Progression Flowchart</a> for information relating to your own circumstances.\n\nIn summary, at Level 1, you will have the chance to resit failed examinations and/or resubmit failed assignments in modules to the value of 120 credits on one occasion only; normally in the August resit period. The mark for any module which is resat will be capped at 40.\n\nIf, after resitting/resubmitting, you have passed 120 credits with marks of at least 40, you may proceed to Level 2 on an honours degree.\n\nIf, after resitting/resubmitting, you have passed 100 credits with marks of at least 40, you may proceed to Level 2 carrying the failed module, as long as you have not failed a module which is a pre-requisite for Level 2 study (such modules are marked with a # symbol in the regulations), or which is a pre-requisite for a core module at Level 2 specifically (pre-requisites are listed within module descriptions).\n\nIf, after resitting/resubmitting, you have either passed fewer than 100 credits with marks of at least 40, or you have failed a module which is a pre-requisite for Level 2 study (such modules are marked with a # symbol in the regulations), you will be required to leave the University. You may be eligible for an exit qualification.\n\nPlease refer to the  <a href=\"https://www.dur.ac.uk/resources/university.calendar/volumeii/2021.2022/coreregsug.pdf\" target=\"_blank\">Core Regulations for Undergraduate Programmes</a> for further guidance","keywords":"retake, fail, resit","sortOrder":4},
   {"id":"faq05","category":"Resits","subcategory":"General","title":"What are the resit rules for Level 2 students","replyText":"Important, first please, refer to the <a href=\"https://www.dur.ac.uk/resources/faculty.handbook/studentsurvivalguide/2015_Level_1-3_Progression.pdf\" target=\"_blank\">Progression Flowchart</a> for information relating to your own circumstances.\n\nIn summary, if a student gains an overall mark of less than 40% in any one or more modules to the value of not more than 60 credits, he/she will be required to resit the failed assessment element(s) of any failed assessment component(s) (e.g. where the examinations have been failed overall but the coursework passed, a student must resit the failed examination paper(s) and those only\n\nIf you are on a Bachelor’s degree programme and, after resitting/resubmitting, you pass 120 credits with marks of at least 40, you may proceed to Level 3 on an/a Bachelor’s honours degree.\n\nIf, after resitting/resubmitting, you have passed 100 credits with marks of at least 40, you may proceed to Level 3 on an ordinary degree, as long as you have not failed a module which is a pre-requisite for Level 3 study (such modules are marked with a # symbol in the regulations).\n\nIf, after resitting/resubmitting, you have either passed fewer than 100 credits with marks of at least 40, or as you have failed a module which is a pre-requisite for Level 3 study (such modules are marked with a # symbol in the regulations), you will be required to leave the University. You may be eligible for an exit qualification.\n\nYou can also read the <a href=\"https://www.dur.ac.uk/resources/university.calendar/volumeii/2021.2022/coreregsug.pdf\" target=\"_blank\">Core Regulations for Undergraduate Programmes</a> for detailed information.\n\nThere are no resit opportunities at Level 3. Please, refer to the <a href=\"https://www.dur.ac.uk/resources/faculty.handbook/studentsurvivalguide/2015_Level_1-3_Progression.pdf\" target=\"_blank\">Progression Flowchart</a> for more information.","keywords":"retake, fail, resit","sortOrder":5},
   {"id":"faq06","category":"Progression","subcategory":"Regulations","title":"What are Exit qualifications","replyText":"Important, please refer to the <a href=\"https://www.dur.ac.uk/resources/faculty.handbook/studentsurvivalguide/2015_Level_1-3_Progression.pdf\" target=\"_blank\">Progression Flowchart</a> for more information on exit qualifications.\n\nIn summary, should you choose, or be required, to leave your degree before completion, or should you fail to gain the credits required for an honours or ordinary degree, you may be eligible for one of the following exit awards:\n\nCertificate of Higher Education: if you have passed 120 credits at Level 1 (including up to 20 credits passed by Compensation)\n\nDiploma of Higher Education: if you have passed 240 credits in total (including at least 90 Level 2 credits; and including up to 40 credits passed by Compensation)","keywords":"","sortOrder":6},
-  {"id":"faq07","category":"Resits","subcategory":"Level 3 resits","title":"I am level 3 student and one or two of my module marks were below the pass mark.  Why I have not been given the opportunity to resit these","replyText":"There are no resit opportunities at Level 3. Please, refer to the <a href=\"https://www.dur.ac.uk/resources/faculty.handbook/studentsurvivalguide/2015_Level_1-3_Progression.pdf\" target=\"_blank\">Progression Flowchart</a> for more information.\n\nThere are no resits at Level 3 (or Level 4). The university regulations allow a certain amount of module failure to be “compensated”. So, even if one or two of your Level 3 module marks are below 40, if they are at least 30 then it is likely that they will have been compensated, and in this case the regulations still allow you to be awarded an Honours degree.","keywords":"retake, fail, resit","sortOrder":7},
+  {"id":"faq07","category":"Resits","subcategory":"Level 3","title":"I am level 3 student and one or two of my module marks were below the pass mark.  Why I have not been given the opportunity to resit these","replyText":"There are no resit opportunities at Level 3. Please, refer to the <a href=\"https://www.dur.ac.uk/resources/faculty.handbook/studentsurvivalguide/2015_Level_1-3_Progression.pdf\" target=\"_blank\">Progression Flowchart</a> for more information.\n\nThere are no resits at Level 3 (or Level 4). The university regulations allow a certain amount of module failure to be “compensated”. So, even if one or two of your Level 3 module marks are below 40, if they are at least 30 then it is likely that they will have been compensated, and in this case the regulations still allow you to be awarded an Honours degree.","keywords":"retake, fail, resit","sortOrder":7},
   {"id":"faq08","category":"Classification","subcategory":"Degree classification","title":"What is an ‘Ordinary’ degree","replyText":"All Business School degrees studied at undergraduate level are Honours degrees.  A Bachelor’s degree with Honours (BA/BSc) usually lasts 3 years and is gained by achieving 360 credits.  Therefore, you must pass all modules to be awarded an Honours degree (please note: a limited number of modules may also be passed by compensation within <a href=\"https://www.dur.ac.uk/about-us/governance/governance-documentation/programme-regulations/undergraduate-programmes/\" target=\"_blank\">Core Regulations for Undergraduate Programmes</a>\n\nStudents who have not achieved the required number of credits for an Honours degree may be eligible for the award of an Ordinary degree.  Students will register for the same number of modules per year and take the same curriculum. In some circumstances, students may return to the Honours route in subsequent years.","keywords":"","sortOrder":8},
   {"id":"faq09","category":"Progression","subcategory":"Withdrawal","title":"I am required to withdraw but why can’t they I do a further resit","replyText":"Unfortunately, this means that you have not met this requirement and so must be withdrawn from the University. I realise that this is disappointing, but the regulations do not permit your request.\n\nThe decision of the Board of Examiners is final and as you have not been granted any further resits, you are required to withdraw from the University. Please refer to the  <a href=\"https://www.dur.ac.uk/resources/university.calendar/volumeii/2021.2022/coreregsug.pdf\" target=\"_blank\">Core Regulations for Undergraduate Programmes</a> for further guidance.","keywords":"withdraw, fail, resit, leave, retake","sortOrder":9},
   {"id":"faq10","category":"Progression","subcategory":"Withdrawal","title":"I am required to withdraw but can I repeat the year instead","replyText":"Students are only permitted to repeat the year in very exceptional circumstances, typically where students have missed a term or more of study. Students who have completed the year and taken assessments are not permitted to repeat. The regulations do not permit your request. Please refer to the  <a href=\"https://www.dur.ac.uk/resources/university.calendar/volumeii/2021.2022/coreregsug.pdf\" target=\"_blank\">Core Regulations for Undergraduate Programmes</a> for further guidance.","keywords":"withdraw, fail, leave","sortOrder":10},
@@ -623,7 +642,7 @@ function buildSidebar() {
   for (const cat of order) {
     const g = groups[cat], ex = expandedCats.has(cat), ac = filter.type==='category' && filter.category===cat;
     const showSubs = g.subcatOrder.length >= 2 && g.subcatOrder.some(s => g.subcategories[s].length >= 2);
-    const arrow = showSubs ? '<span class="arrow" data-toggle="' + cat + '">' + (ex?'\u25BE':'\u25B8') + '</span>' : '<span class="arrow no-toggle">\u2003</span>';
+    const arrow = showSubs ? '<span class="arrow" data-toggle="' + cat + '">' + (ex?'\u25BC':'\u25B6') + '</span>' : '<span class="arrow no-toggle">\u2022</span>';
     h += '<div class="sidebar-item' + (ac?' active':'') + '" data-filter="category" data-cat="' + cat + '"><div class="cat-header">' + arrow + '<span class="label">' + cat + '</span><span class="count">' + g.items.length + '</span></div></div>';
     if (showSubs) {
       h += '<div class="subcat-list' + (ex?' expanded':'') + '">';
@@ -713,7 +732,7 @@ searchBox.addEventListener('input', () => { searchQuery = searchBox.value.trim()
 // ── Events: cards ──
 cardsPanel.addEventListener('click', e => {
   const cp = e.target.closest('.copy-btn');
-  if (cp) { const r=allResponses.find(x=>x.id===cp.dataset.id); if(!r)return; navigator.clipboard.writeText(r.replyText).then(()=>{cp.textContent='Copied!';cp.classList.add('copied');setTimeout(()=>{cp.textContent='Copy';cp.classList.remove('copied');},1500);}).catch(()=>showToast('Copy failed')); return; }
+  if (cp) { const r=allResponses.find(x=>x.id===cp.dataset.id); if(!r)return; const plain=r.replyText.replace(/<a\s[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/g,'$2 ($1)').replace(/<[^>]+>/g,''); navigator.clipboard.writeText(plain).then(()=>{cp.textContent='Copied!';cp.classList.add('copied');setTimeout(()=>{cp.textContent='Copy';cp.classList.remove('copied');},1500);}).catch(()=>showToast('Copy failed')); return; }
   const ed = e.target.closest('.edit-btn');
   if (ed) { const r=allResponses.find(x=>x.id===ed.dataset.id); if(r)openModal(r); return; }
   const del = e.target.closest('.delete-btn');
