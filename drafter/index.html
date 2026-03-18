@@ -222,19 +222,21 @@ body {
 }
 .leaf-copy {
   flex-shrink: 0;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  border-radius: 4px;
-  opacity: 0.4;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 50%;
+  color: #2b4c7e;
+  opacity: 0.5;
   cursor: pointer;
-  transition: opacity 0.15s, background 0.15s;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
 }
-.leaf-copy:hover { opacity: 1; background: #e2e8f0; }
-.leaf-copy.copied { opacity: 1; background: #c6f6d5; }
+.leaf-copy:hover { opacity: 1; background: #2b4c7e; color: #fff; }
+.leaf-copy.copied { opacity: 1; background: #276749; color: #fff; }
 
 /* ── Cards panel ── */
 .cards-panel {
@@ -669,7 +671,7 @@ function buildSidebar() {
     h += '<div class="sidebar-item' + (ac?' active':'') + '" data-filter="category" data-cat="' + cat + '"><div class="cat-header"><span class="arrow" data-toggle="' + cat + '">' + (ex?'\u25BC':'\u25B6') + '</span><span class="label">' + cat + '</span><span class="count">' + g.items.length + '</span></div></div>';
     h += '<div class="subcat-list' + (ex?' expanded':'') + '">';
     for (const item of g.items) {
-      h += '<div class="subcat-item response-leaf" data-id="' + item.id + '"><span class="leaf-title">' + esc(item.title) + '</span><span class="leaf-copy" data-copyid="' + item.id + '" title="Copy to clipboard">&#128203;</span></div>';
+      h += '<div class="subcat-item response-leaf" data-id="' + item.id + '"><span class="leaf-title">' + esc(item.title) + '</span><span class="leaf-copy" data-copyid="' + item.id + '" title="Copy to clipboard">&copy;</span></div>';
     }
     h += '</div>';
   }
@@ -744,7 +746,7 @@ sidebar.addEventListener('click', e => {
     const r = allResponses.find(x=>x.id===lc.dataset.copyid);
     if (!r) return;
     const plain = r.replyText.replace(/<a\s[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/g,'$2 ($1)').replace(/<[^>]+>/g,'');
-    navigator.clipboard.writeText(plain).then(()=>{lc.classList.add('copied');lc.innerHTML='&#10003;';setTimeout(()=>{lc.classList.remove('copied');lc.innerHTML='&#128203;';},1200);}).catch(()=>showToast('Copy failed'));
+    navigator.clipboard.writeText(plain).then(()=>{lc.classList.add('copied');lc.innerHTML='&#10003;';setTimeout(()=>{lc.classList.remove('copied');lc.innerHTML='&copy;';},1200);}).catch(()=>showToast('Copy failed'));
     return;
   }
   // Expand/collapse arrow
