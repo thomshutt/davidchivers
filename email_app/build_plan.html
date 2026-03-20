@@ -46,18 +46,22 @@ boundaries</h2>
 <code>templates/student_enquiry_form_import.docx</code>.</li>
 <li>Review the imported form and tidy any question that needs
 adjustment.</li>
-<li>Add branching for <code>Year of study</code> and
-<code>Other enquiry type</code>.</li>
+<li>Add branching for <code>Other enquiry type</code>.</li>
 <li>Set the thank-you message to say that an acknowledgement email will
 follow.</li>
 <li>Make sure the introduction says students must be signed in and do
 not need to type username or email.</li>
+<li>Make sure the introduction says stable record details are checked
+separately and do not need to be typed by the student.</li>
 </ol>
 <p>Recommended settings:</p>
 <ul>
 <li><code>Only people in my organization can respond</code></li>
 <li><code>Record name</code> on</li>
 <li>do not limit to one response per person</li>
+<li>do not ask for stage, year, or programme in the preferred build</li>
+<li>only add one checkpoint field later if matching proves
+unreliable</li>
 <li>only add a separate <code>University email address</code> question
 if testing shows the flow cannot access the responder email</li>
 </ul>
@@ -68,6 +72,8 @@ workbook</h2>
 <li>Add a table named <code>StudentLookup</code>.</li>
 <li>Use the columns from
 <code>templates/student_lookup_schema.csv</code>.</li>
+<li>Prefer to populate the workbook from a Banner export or another
+trusted student-record source.</li>
 <li>Populate a small clean test set first.</li>
 <li>Ensure <code>UniversityEmailNormalized</code> is unique and
 lowercase.</li>
@@ -78,7 +84,7 @@ department-sized cohort of roughly 1,100 students, do not split the
 workbook by year or stage in version 1.</li>
 </ol>
 <p>Do not use the workbook to log enquiries in version 1. Use it only as
-lookup data.</p>
+backend lookup data.</p>
 <h2 id="build-the-power-automate-flow">4. build the Power Automate
 flow</h2>
 <ol type="1">
@@ -92,6 +98,8 @@ identity.</li>
 <li>Attempt the Excel <code>Get a row</code> lookup on
 <code>UniversityEmailNormalized</code>.</li>
 <li>Resolve matched and unmatched outputs.</li>
+<li>If lookup fails, continue with the enquiry and let staff check
+Banner or the student record separately.</li>
 <li>Set the suggested owner label based on enquiry type.</li>
 <li>Send the staff email.</li>
 <li>Send the student acknowledgement email when the flow has an email
@@ -116,7 +124,7 @@ pack</h2>
 <li>Matched taught postgraduate IT / systems access enquiry</li>
 <li>Unmatched university email</li>
 <li><code>Other</code> enquiry type with free-text subtype</li>
-<li>Extension or mitigating circumstances submission</li>
+<li>Normal enquiry with no checkpoint fields on the form</li>
 </ol>
 <p>Check each test for:</p>
 <ul>
@@ -125,6 +133,8 @@ pack</h2>
 <li>correct fallback behavior when lookup fails</li>
 <li>readable staff email</li>
 <li>correct acknowledgement email</li>
+<li>enough student context from the lookup without asking the student
+for programme or year on the form</li>
 </ul>
 <h2 id="move-from-pilot-inbox-to-shared-mailbox">7. move from pilot
 inbox to shared mailbox</h2>
@@ -162,7 +172,8 @@ mailbox</li>
 after pilot</h2>
 <p>Once the pilot works:</p>
 <ol type="1">
-<li>Trim any form field that turns out to be unnecessary.</li>
+<li>Keep the form short and only add a checkpoint field if testing shows
+it is needed.</li>
 <li>Replace Excel only if lookup quality or scale justifies it.</li>
 <li>Add lightweight reporting from the mailbox or flow run history
 before adding a new platform.</li>

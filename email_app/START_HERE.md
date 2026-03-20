@@ -60,6 +60,12 @@ The browser-first version of the pack is:
 - sends a structured staff email
 - sends an acknowledgement email to the student
 
+Preferred version 1 rule:
+
+- ask students only for the enquiry itself
+- pull stable student facts from Banner export or Excel lookup data
+- keep any extra checkpoint question optional
+
 ## What this prototype does not do
 
 - full case management

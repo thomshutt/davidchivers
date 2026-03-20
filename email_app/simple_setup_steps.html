@@ -47,18 +47,16 @@ order.</p>
 <code>templates/microsoft_form_questions.md</code>.</li>
 <li>Add these questions:
 <ul>
-<li>Stage of study</li>
-<li>Year of study</li>
-<li>Programme of study</li>
 <li>Enquiry type</li>
 <li>Other enquiry type</li>
 <li>Message</li>
 </ul></li>
 <li>Tell students in the introduction that they must be signed in and do
 not need to type username or email.</li>
+<li>Tell students that stable record details such as programme, year,
+and student ID are checked separately.</li>
 <li>Add branching:
 <ul>
-<li>show <code>Year of study</code> only for undergraduates</li>
 <li>show <code>Other enquiry type</code> only when enquiry type is
 <code>Other</code></li>
 </ul></li>
@@ -66,6 +64,11 @@ not need to type username or email.</li>
 <li>Turn on recorded responder identity.</li>
 <li>Set the thank-you message to say the student will receive an
 acknowledgement email.</li>
+<li>Do not add stage, year, or programme questions in the preferred
+build.</li>
+<li>Only add one checkpoint question later, such as
+<code>Programme of study</code>, if testing shows the lookup is not
+reliable enough.</li>
 <li>Only add a separate <code>University email address</code> question
 later if testing shows the flow cannot access the responder’s
 email.</li>
@@ -77,12 +80,16 @@ file</h2>
 <li>Add a table called <code>StudentLookup</code>.</li>
 <li>Use the columns in
 <code>templates/student_lookup_schema.csv</code>.</li>
+<li>Populate it from a Banner export or another trusted student-record
+source if you can.</li>
 <li>Make sure <code>UniversityEmailNormalized</code> is lowercase and
 unique.</li>
 <li>Add a few real or test student rows.</li>
 <li>Make sure the Power Automate account can open the workbook.</li>
 <li>Keep one table for all active department students. Do not split the
 lookup by year or stage in version 1.</li>
+<li>Use this workbook as backend lookup data, not as the main staff
+working screen.</li>
 </ol>
 <h2 id="build-the-power-automate-flow">4. build the Power Automate
 flow</h2>
@@ -99,7 +106,8 @@ flow</h2>
 <li>Look up the student in Excel using
 <code>UniversityEmailNormalized</code>.</li>
 <li>If the lookup works, use the Excel data in the staff email.</li>
-<li>If the lookup fails, still continue and use the form answers.</li>
+<li>If the lookup fails, still continue and use the recorded responder
+email and manual Banner checking.</li>
 <li>Set a <code>Suggested owner</code> based on enquiry type.</li>
 <li>Send the structured staff email to the pilot inbox.</li>
 <li>Send the acknowledgement email to the student when the flow has an
@@ -117,7 +125,7 @@ email address to use.</li>
 <ul>
 <li>send all staff emails to one inbox</li>
 <li>use subject tags like <code>[Module enquiry]</code> and
-<code>[UG]</code></li>
+<code>[Matched]</code></li>
 <li>include <code>Suggested owner</code> in the body</li>
 </ul>
 <p>Do not auto-assign to named people yet.</p>
@@ -128,7 +136,7 @@ email address to use.</li>
 <li>A matched taught postgraduate enquiry</li>
 <li>An unmatched university email</li>
 <li>An <code>Other</code> enquiry type</li>
-<li>An extension or mitigating circumstances enquiry</li>
+<li>A normal enquiry with no extra checkpoint fields on the form</li>
 </ol>
 <p>Check that:</p>
 <ul>
@@ -136,6 +144,8 @@ email address to use.</li>
 <li>the staff email is readable</li>
 <li>the acknowledgement email is sent</li>
 <li>the flow still works when lookup fails</li>
+<li>staff can still identify the student without asking for programme or
+year on the form</li>
 </ul>
 <h2 id="move-to-the-shared-mailbox">7. move to the shared mailbox</h2>
 <p>When the pilot works:</p>

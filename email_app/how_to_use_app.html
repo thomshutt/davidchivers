@@ -14,7 +14,7 @@
 
     <section class="step">
       <h2>Step 1. Student submits the form</h2>
-      <p>The student opens the Microsoft Form, signs in with their university account, completes the enquiry questions, and submits the message. The form records the responder identity automatically.</p>
+      <p>The student opens the Microsoft Form, signs in with their university account, completes the enquiry questions, and submits the message. The form records the responder identity automatically, so the student does not need to type programme, year, username, or email.</p>
       <div class="links">
         <a href="templates/microsoft_form_questions.html">Form question guide</a>
       </div>
@@ -30,7 +30,7 @@
 
     <section class="step">
       <h2>Step 3. The app tries to enrich the enquiry</h2>
-      <p>The flow uses the recorded responder email to check the Excel lookup table. If a match is found, the staff email includes student details such as student ID, programme, advisor, and Banner context. The app can also derive the CIS username from the email prefix if staff want that in the email.</p>
+      <p>The flow uses the recorded responder email to check the Excel lookup table. That workbook should preferably be populated from Banner export or another trusted student-record source. If a match is found, the staff email includes student details such as student ID, programme, advisor, and Banner context. The app can also derive the CIS username from the email prefix if staff want that in the email.</p>
       <div class="links">
         <a href="templates/student_lookup_schema.csv">Lookup schema</a>
       </div>
@@ -59,7 +59,7 @@
 
     <section class="step">
       <h2>Step 7. If lookup fails, staff still work the enquiry</h2>
-      <p>If no lookup match is found, the staff email should still be sent. Staff can use the recorded responder email and the form answers to follow up manually.</p>
+      <p>If no lookup match is found, the staff email should still be sent. Staff can use the recorded responder email and check Banner or the student record manually. The spreadsheet supports the flow, but it should not become the main staff working interface.</p>
     </section>
 
     <section class="step">

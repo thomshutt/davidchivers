@@ -8,7 +8,7 @@
 
 Use this form for general department enquiries about modules, academic advising, assessments, attendance, timetables, systems access, and related issues.
 
-You must be signed in with your university account to use this form. The form records your university account details automatically, so you do not need to type your username or email address. If your issue is urgent or relates to a deadline today, contact the department office directly.
+You must be signed in with your university account to use this form. The form records your university account details automatically, so you do not need to type your username or email address. Stable record details such as programme, year, and student ID are checked separately by staff systems where possible. If your issue is urgent or relates to a deadline today, contact the department office directly.
 
 If your university uses a separate formal process for extensions or mitigating circumstances, you may still need to complete that process.
 
@@ -16,59 +16,7 @@ Please do not include unnecessary sensitive personal or medical information in t
 
 ## Questions
 
-### 1. Stage of study
-
-- Type: choice
-- Required: yes
-- Prompt:
-
-`Stage of study`
-
-- Options:
-
-`Undergraduate`  
-`Taught postgraduate`
-
-### 2. Year of study
-
-- Type: choice
-- Required: yes for undergraduates
-- Prompt:
-
-`Year of study`
-
-- Options:
-
-`Year 1`  
-`Year 2`  
-`Year 3`  
-`Year 4`
-
-- Branching:
-
-Show only if `Stage of study = Undergraduate`.
-
-### 3. Programme of study
-
-- Type: choice
-- Required: yes
-- Prompt:
-
-`Programme of study`
-
-- Options:
-
-`BSc Economics`  
-`BSc Economics and Management`  
-`BA Economics and Politics`  
-`BA PPE`  
-`Masters`
-
-- Note:
-
-This is a checkpoint field for version 1 and can be removed later if lookup proves fully reliable.
-
-### 4. Enquiry type
+### 1. Enquiry type
 
 - Type: choice
 - Required: yes
@@ -89,7 +37,7 @@ This is a checkpoint field for version 1 and can be removed later if lookup prov
 `Fees / finance`  
 `Other`
 
-### 5. Other enquiry type
+### 2. Other enquiry type
 
 - Type: text
 - Required: yes when shown
@@ -101,7 +49,7 @@ This is a checkpoint field for version 1 and can be removed later if lookup prov
 
 Show only if `Enquiry type = Other`.
 
-### 6. Message
+### 3. Message
 
 - Type: long text
 - Required: yes
@@ -113,10 +61,20 @@ Show only if `Enquiry type = Other`.
 
 `Include enough detail for staff to understand the issue and what help you need.`
 
+## Optional checkpoint field
+
+Preferred version 1 build:
+
+- Do not ask for stage, year, or programme on the form.
+- Pull stable student facts from the lookup workbook instead.
+
+Fallback if matching later proves unreliable:
+
+- Add one checkpoint question such as `Programme of study`.
+- Do not add multiple extra study-detail questions unless testing shows they are needed.
+
 ## Branching map
 
-- If `Stage of study = Undergraduate`, go to `Year of study`, then `Programme of study`.
-- If `Stage of study = Taught postgraduate`, skip `Year of study` and go to `Programme of study`.
 - If `Enquiry type = Other`, show `Other enquiry type`, then `Message`.
 - Otherwise, skip `Other enquiry type` and go to `Message`.
 

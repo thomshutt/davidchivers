@@ -14,7 +14,9 @@ This project is intentionally lightweight:
 
 ## Recommended version 1
 
-- Use one department form with a small number of checkpoint fields.
+- Use one short department form that asks only for the enquiry itself.
+- Pull stable student facts from Banner export or Excel lookup data where possible.
+- Keep any extra checkpoint field optional and add it only if testing shows matching is unreliable.
 - Generate the enquiry reference from the Forms response ID so version 1 does not need a separate counter store.
 - Use an Excel table keyed on normalized university email.
 - Send one structured staff email and one student acknowledgement email for every submission.
