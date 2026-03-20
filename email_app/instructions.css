@@ -46,22 +46,6 @@ a {
   margin-top: 24px;
 }
 
-.download-link {
-  display: inline-block;
-  margin: 6px 0 8px;
-  padding: 10px 14px;
-  background: #0b6e4f;
-  color: #ffffff;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: 700;
-}
-
-.download-link:hover {
-  color: #ffffff;
-  background: #08563e;
-}
-
 .home-links a {
   display: block;
   padding: 18px 20px;

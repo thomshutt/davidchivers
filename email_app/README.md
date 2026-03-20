@@ -62,4 +62,4 @@ This project is intentionally lightweight:
 
 ## Packaging note
 
-This folder is intended to work as a standalone handover pack. If you need to send it to someone else, zip the whole `other/email_app` folder so the relative links keep working.
+This folder is intended to work as a standalone handover pack. If you need to send it to someone else, keep the whole `other/email_app` folder together so the relative links keep working.

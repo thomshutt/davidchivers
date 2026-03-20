@@ -79,7 +79,7 @@ For this project, the safest setup is:
 
 1. Keep the operational workflow online in Microsoft 365.
 2. Keep the handover documentation as this standalone folder.
-3. Zip the folder if you need to send it to someone else.
+3. Keep the files together if you need to send the folder to someone else.
 
 That is simpler than building a separate website, and more usable than relying on a PDF alone.
 
