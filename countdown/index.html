@@ -6,16 +6,14 @@
   <title>Tom, You Need To Write</title>
   <style>
     :root {
-      color-scheme: light;
-      --desktop: #008080;
-      --window: #c0c0c0;
-      --border-light: #ffffff;
-      --border-dark: #808080;
-      --border-deep: #000000;
-      --title-start: #000080;
-      --title-end: #1084d0;
-      --text: #111111;
-      --field: #ffffff;
+      color-scheme: dark;
+      --ink: #f8fbff;
+      --muted: #7ad9ff;
+      --accent: #ffde59;
+      --accent-2: #ff4fd8;
+      --accent-3: #6dff72;
+      --border-light: #aefcff;
+      --panel-border: #0b3853;
     }
 
     * {
@@ -25,236 +23,363 @@
     body {
       margin: 0;
       min-height: 100vh;
+      font-family: "Trebuchet MS", Verdana, sans-serif;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(84, 243, 255, 0.18), transparent 20%),
+        radial-gradient(circle at 78% 14%, rgba(255, 79, 216, 0.16), transparent 16%),
+        linear-gradient(rgba(84, 243, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(84, 243, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(180deg, #15284f 0%, #060912 38%, #000000 100%);
+      background-size: auto, auto, 26px 26px, 26px 26px, auto;
+      color: var(--ink);
       display: grid;
       place-items: center;
       padding: 24px;
-      background: var(--desktop);
-      color: var(--text);
-      font-family: "MS Sans Serif", Tahoma, Geneva, sans-serif;
+      position: relative;
+      overflow-x: hidden;
     }
 
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      pointer-events: none;
       background: repeating-linear-gradient(
         180deg,
-        rgba(255, 255, 255, 0.1) 0,
-        rgba(255, 255, 255, 0.1) 1px,
-        rgba(0, 0, 0, 0) 2px,
-        rgba(0, 0, 0, 0) 4px
+        rgba(255, 255, 255, 0.06) 0,
+        rgba(255, 255, 255, 0.06) 1px,
+        transparent 2px,
+        transparent 4px
       );
-      opacity: 0.12;
-    }
-
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
+      opacity: 0.14;
       pointer-events: none;
-      background: radial-gradient(circle at center, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.22) 100%);
     }
 
-    .window {
-      width: min(560px, 100%);
-      background: var(--window);
-      border-top: 2px solid var(--border-light);
-      border-left: 2px solid var(--border-light);
-      border-right: 2px solid var(--border-deep);
-      border-bottom: 2px solid var(--border-deep);
+    main {
+      width: min(820px, 100%);
+      background: linear-gradient(180deg, rgba(18, 41, 84, 0.96), rgba(3, 9, 22, 0.98) 18%, rgba(0, 0, 0, 0.98) 100%);
+      border: 4px ridge var(--border-light);
       box-shadow:
-        2px 2px 0 rgba(0, 0, 0, 0.25),
-        0 0 24px rgba(255, 255, 255, 0.15);
+        inset 0 0 0 3px rgba(174, 252, 255, 0.15),
+        0 0 32px rgba(84, 243, 255, 0.25),
+        0 0 70px rgba(255, 79, 216, 0.14);
+      padding: 24px;
       position: relative;
     }
 
-    .window::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 24%);
-    }
-
-    .title-bar {
+    .chrome {
       display: flex;
-      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
       justify-content: space-between;
-      gap: 12px;
-      padding: 4px 6px;
-      background: linear-gradient(90deg, var(--title-start), var(--title-end));
-      color: #ffffff;
-      font-size: 0.92rem;
+      margin-bottom: 18px;
+      padding: 8px 12px;
+      background: linear-gradient(180deg, #40dfff, #0c6eb0);
+      border: 3px outset #aefcff;
+      color: #001320;
+      font-size: 0.8rem;
       font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
-    .title-text {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .masthead {
+      margin-bottom: 18px;
     }
 
-    .title-buttons {
-      display: flex;
-      gap: 4px;
-      flex-shrink: 0;
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
     }
 
-    .title-button {
-      width: 18px;
-      height: 18px;
-      display: grid;
-      place-items: center;
-      background: var(--window);
-      color: #000000;
-      font-size: 0.7rem;
-      line-height: 1;
-      border-top: 2px solid var(--border-light);
-      border-left: 2px solid var(--border-light);
-      border-right: 2px solid var(--border-dark);
-      border-bottom: 2px solid var(--border-dark);
+    h1 {
+      margin: 0;
+      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5.6rem);
+      line-height: 0.9;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-shadow:
+        3px 3px 0 #ff4fd8,
+        6px 6px 0 #0e203d,
+        0 0 18px rgba(255, 222, 89, 0.45);
     }
 
-    .window-body {
-      padding: 18px;
+    .lead {
+      margin: 12px 0 0;
+      font-size: 1.08rem;
+      color: #e8f6ff;
+      max-width: 58ch;
+      line-height: 1.5;
+    }
+
+    .marquee-wrap {
+      margin-bottom: 18px;
+      border: 3px ridge #ffd2f7;
+      background: linear-gradient(180deg, #2d0233, #120014);
+      box-shadow: 0 0 18px rgba(255, 79, 216, 0.2);
+    }
+
+    .marquee-label {
+      padding: 8px 12px;
+      background: linear-gradient(180deg, #ff69d7, #9d2d77);
+      color: #1d0018;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border-bottom: 2px solid #ffd2f7;
+    }
+
+    marquee {
+      padding: 12px 0;
+      color: #fff59e;
+      font-family: "Lucida Console", "Courier New", monospace;
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(255, 222, 89, 0.6);
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(10, 32, 66, 0.98), rgba(1, 8, 17, 0.98));
+      border: 3px ridge var(--border-light);
+      box-shadow:
+        inset 0 0 0 2px rgba(4, 14, 24, 0.9),
+        inset 0 0 18px rgba(84, 243, 255, 0.08),
+        0 0 16px rgba(84, 243, 255, 0.14);
+      padding: 20px;
     }
 
     .result {
-      margin: 0 0 18px;
-      padding: 18px 16px;
-      background: var(--field);
-      border-top: 2px solid var(--border-dark);
-      border-left: 2px solid var(--border-dark);
-      border-right: 2px solid var(--border-light);
-      border-bottom: 2px solid var(--border-light);
-      font-size: clamp(1.45rem, 4vw, 2rem);
-      font-weight: 700;
-      line-height: 1.2;
-    }
-
-    .controls {
-      display: grid;
-      gap: 14px;
+      margin: 0 0 16px;
+      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
+      font-size: clamp(2rem, 4.5vw, 3.4rem);
+      line-height: 1;
+      color: var(--accent);
+      text-shadow:
+        2px 2px 0 #ff4fd8,
+        4px 4px 0 #0e203d;
     }
 
     .field {
       display: grid;
-      gap: 6px;
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
     label {
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
     }
 
     input {
       width: 100%;
-      padding: 9px 10px;
+      padding: 14px 16px;
+      border: 3px inset #c8faff;
       font: inherit;
-      color: var(--text);
-      background: var(--field);
-      border-top: 2px solid var(--border-dark);
-      border-left: 2px solid var(--border-dark);
-      border-right: 2px solid var(--border-light);
-      border-bottom: 2px solid var(--border-light);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-3);
+      background: #00070e;
+      box-shadow: inset 0 0 12px rgba(109, 255, 114, 0.08);
     }
 
-    .hint {
-      margin: 16px 0 0;
-      font-size: 0.82rem;
+    input:focus {
+      outline: 2px solid rgba(84, 243, 255, 0.45);
+      border-color: var(--border-light);
+    }
+
+    .deadline {
+      margin: 0;
+      color: #fff3af;
+      font-size: 0.96rem;
+      line-height: 1.5;
+    }
+
+    .pace-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .stat {
+      padding: 18px;
+      text-align: center;
+    }
+
+    .stat-value {
+      display: block;
+      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 700;
+      color: var(--accent-3);
+      text-shadow: 2px 2px 0 #00250a;
+    }
+
+    .stat-label {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 760px) {
+      .pace-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 520px) {
+      main {
+        padding: 20px;
+      }
+
+      .pace-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="window" aria-label="Tom writing tracker">
-    <div class="title-bar">
-      <div class="title-text">Tom, You Need To Write</div>
-      <div class="title-buttons" aria-hidden="true">
-        <div class="title-button">_</div>
-        <div class="title-button">&#9633;</div>
-        <div class="title-button">X</div>
-      </div>
+  <main>
+    <div class="chrome">
+      <span>TOMWRITE.EXE</span>
+      <span>Draft Panic Mode</span>
+      <span>Save Slot: Browser</span>
     </div>
 
-    <div class="window-body">
-      <p class="result" id="words-left-text">You have 40,000 words left.</p>
+    <header class="masthead">
+      <p class="eyebrow">1990s Writing Emergency System</p>
+      <h1>Tom, You Need To Write</h1>
+      <p class="lead">The target starts at 40,000. Click it down as the draft gets written, and the required pace updates underneath.</p>
+    </header>
 
-      <div class="controls">
-        <div class="field">
-          <label for="goal-words">Goal</label>
-          <input id="goal-words" type="number" min="1" step="100" value="40000" inputmode="numeric">
-        </div>
+    <section class="marquee-wrap" aria-label="Writing banner">
+      <div class="marquee-label">Writing Banner</div>
+      <marquee scrollamount="10">40,000 words loaded. Click down from there. Deadline locked for 6 Jan 2027.</marquee>
+    </section>
 
-        <div class="field">
-          <label for="words-written">Words written so far</label>
-          <input id="words-written" type="number" min="0" step="1" value="0" inputmode="numeric">
-        </div>
+    <section class="panel">
+      <p class="result">You have <span id="words-left-text">40,000</span> words left.</p>
+
+      <div class="field">
+        <label for="words-left">Words Left</label>
+        <input id="words-left" type="number" min="0" step="100" value="40000" inputmode="numeric">
       </div>
 
-      <p class="hint">The goal is editable and this page remembers both numbers in this browser.</p>
-    </div>
+      <p class="deadline" id="deadline-text">Deadline: 6 Jan 2027, 23:59</p>
+    </section>
+
+    <section class="pace-grid" aria-label="Required writing pace">
+      <div class="panel stat">
+        <span class="stat-value" id="per-day">0</span>
+        <span class="stat-label">Words Per Day</span>
+      </div>
+      <div class="panel stat">
+        <span class="stat-value" id="per-hour">0</span>
+        <span class="stat-label">Words Per Hour</span>
+      </div>
+      <div class="panel stat">
+        <span class="stat-value" id="per-minute">0</span>
+        <span class="stat-label">Words Per Minute</span>
+      </div>
+      <div class="panel stat">
+        <span class="stat-value" id="per-second">0</span>
+        <span class="stat-label">Words Per Second</span>
+      </div>
+    </section>
   </main>
 
   <script>
-    const DEFAULT_GOAL_WORDS = 40000;
-    const GOAL_STORAGE_KEY = "tom-countdown-goal-words";
-    const WRITTEN_STORAGE_KEY = "tom-countdown-words-written";
+    const DEFAULT_WORDS_LEFT = 40000;
+    const DEADLINE = new Date(2027, 0, 6, 23, 59, 59);
+    const STORAGE_KEY = "tom-countdown-words-left";
+    const DAY_MS = 1000 * 60 * 60 * 24;
+    const HOUR_MS = 1000 * 60 * 60;
+    const MINUTE_MS = 1000 * 60;
+    const SECOND_MS = 1000;
 
-    const goalInput = document.getElementById("goal-words");
-    const wordsInput = document.getElementById("words-written");
+    const wordsLeftInput = document.getElementById("words-left");
     const wordsLeftText = document.getElementById("words-left-text");
+    const deadlineText = document.getElementById("deadline-text");
 
-    function clampGoal(value) {
+    const paceEls = {
+      day: document.getElementById("per-day"),
+      hour: document.getElementById("per-hour"),
+      minute: document.getElementById("per-minute"),
+      second: document.getElementById("per-second")
+    };
+
+    function clampWords(value) {
       if (!Number.isFinite(value)) {
-        return DEFAULT_GOAL_WORDS;
+        return DEFAULT_WORDS_LEFT;
       }
 
-      return Math.max(1, Math.min(1000000, Math.round(value)));
+      return Math.max(0, Math.min(1000000, Math.round(value)));
     }
 
-    function clampWords(value, goalWords) {
-      if (!Number.isFinite(value)) {
-        return 0;
+    function formatNumber(value, decimals = 0) {
+      return new Intl.NumberFormat("en-GB", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      }).format(value);
+    }
+
+    function formatRate(wordsLeft, periodMs, remainingMs, decimals) {
+      if (wordsLeft <= 0) {
+        return "0";
       }
 
-      return Math.max(0, Math.min(goalWords, Math.round(value)));
-    }
+      if (remainingMs <= 0) {
+        return "Overdue";
+      }
 
-    function formatNumber(value) {
-      return new Intl.NumberFormat("en-GB").format(value);
+      return formatNumber(wordsLeft / (remainingMs / periodMs), decimals);
     }
 
     function update() {
-      const goalWords = clampGoal(Number(goalInput.value));
-      const wordsWritten = clampWords(Number(wordsInput.value), goalWords);
-      const wordsLeft = Math.max(0, goalWords - wordsWritten);
+      const wordsLeft = clampWords(Number(wordsLeftInput.value));
+      const remainingMs = DEADLINE.getTime() - Date.now();
 
-      goalInput.value = goalWords;
-      wordsInput.value = wordsWritten;
-      wordsInput.max = String(goalWords);
-      wordsLeftText.textContent = `You have ${formatNumber(wordsLeft)} words left.`;
+      wordsLeftInput.value = wordsLeft;
+      wordsLeftText.textContent = formatNumber(wordsLeft);
+      paceEls.day.textContent = formatRate(wordsLeft, DAY_MS, remainingMs, 1);
+      paceEls.hour.textContent = formatRate(wordsLeft, HOUR_MS, remainingMs, 2);
+      paceEls.minute.textContent = formatRate(wordsLeft, MINUTE_MS, remainingMs, 3);
+      paceEls.second.textContent = formatRate(wordsLeft, SECOND_MS, remainingMs, 5);
     }
 
     function handleInput() {
       update();
-      localStorage.setItem(GOAL_STORAGE_KEY, goalInput.value);
-      localStorage.setItem(WRITTEN_STORAGE_KEY, wordsInput.value);
+      localStorage.setItem(STORAGE_KEY, wordsLeftInput.value);
     }
 
-    const savedGoal = Number(localStorage.getItem(GOAL_STORAGE_KEY));
-    if (Number.isFinite(savedGoal)) {
-      goalInput.value = clampGoal(savedGoal);
+    const savedWordsLeft = Number(localStorage.getItem(STORAGE_KEY));
+    if (Number.isFinite(savedWordsLeft)) {
+      wordsLeftInput.value = clampWords(savedWordsLeft);
     }
 
-    const savedWords = Number(localStorage.getItem(WRITTEN_STORAGE_KEY));
-    if (Number.isFinite(savedWords)) {
-      wordsInput.value = clampWords(savedWords, clampGoal(Number(goalInput.value)));
-    }
+    deadlineText.textContent = `Deadline: ${DEADLINE.toLocaleString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    })}`;
 
-    goalInput.addEventListener("input", handleInput);
-    wordsInput.addEventListener("input", handleInput);
+    wordsLeftInput.addEventListener("input", handleInput);
     update();
+    setInterval(update, 1000);
   </script>
 </body>
 </html>
