@@ -6,19 +6,16 @@
   <title>Tom, You Need To Write</title>
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #03050a;
-      --panel: #061225;
-      --panel-deep: #020812;
-      --ink: #f8fbff;
-      --muted: #7ad9ff;
-      --accent: #ffde59;
-      --accent-2: #ff4fd8;
-      --accent-3: #6dff72;
-      --accent-4: #54f3ff;
-      --border-light: #aefcff;
-      --border-dark: #0b3853;
-      --shadow: 0 0 24px rgba(84, 243, 255, 0.28);
+      color-scheme: light;
+      --desktop: #008080;
+      --window: #c0c0c0;
+      --border-light: #ffffff;
+      --border-dark: #808080;
+      --border-deep: #000000;
+      --title-start: #000080;
+      --title-end: #1084d0;
+      --text: #111111;
+      --field: #ffffff;
     }
 
     * {
@@ -28,497 +25,185 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: "Trebuchet MS", Verdana, sans-serif;
-      background:
-        radial-gradient(circle at 20% 18%, rgba(84, 243, 255, 0.18), transparent 20%),
-        radial-gradient(circle at 78% 14%, rgba(255, 79, 216, 0.16), transparent 16%),
-        linear-gradient(rgba(84, 243, 255, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(84, 243, 255, 0.08) 1px, transparent 1px),
-        linear-gradient(180deg, #15284f 0%, #060912 38%, #000000 100%);
-      background-size: auto, auto, 26px 26px, 26px 26px, auto;
-      color: var(--ink);
       display: grid;
       place-items: center;
       padding: 24px;
-      position: relative;
-      overflow-x: hidden;
+      background: var(--desktop);
+      color: var(--text);
+      font-family: "MS Sans Serif", Tahoma, Geneva, sans-serif;
     }
 
     body::before {
       content: "";
       position: fixed;
       inset: 0;
+      pointer-events: none;
       background: repeating-linear-gradient(
         180deg,
-        rgba(255, 255, 255, 0.06) 0,
-        rgba(255, 255, 255, 0.06) 1px,
-        transparent 2px,
-        transparent 4px
+        rgba(255, 255, 255, 0.1) 0,
+        rgba(255, 255, 255, 0.1) 1px,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(0, 0, 0, 0) 4px
       );
+      opacity: 0.12;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
       pointer-events: none;
-      opacity: 0.14;
+      background: radial-gradient(circle at center, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.22) 100%);
     }
 
-    main {
-      width: min(1080px, 100%);
-      background:
-        linear-gradient(180deg, rgba(18, 41, 84, 0.96), rgba(3, 9, 22, 0.98) 18%, rgba(0, 0, 0, 0.98) 100%);
-      border: 4px ridge var(--border-light);
+    .window {
+      width: min(560px, 100%);
+      background: var(--window);
+      border-top: 2px solid var(--border-light);
+      border-left: 2px solid var(--border-light);
+      border-right: 2px solid var(--border-deep);
+      border-bottom: 2px solid var(--border-deep);
       box-shadow:
-        inset 0 0 0 3px rgba(174, 252, 255, 0.15),
-        0 0 32px rgba(84, 243, 255, 0.25),
-        0 0 70px rgba(255, 79, 216, 0.14);
+        2px 2px 0 rgba(0, 0, 0, 0.25),
+        0 0 24px rgba(255, 255, 255, 0.15);
       position: relative;
-      padding: 24px;
     }
 
-    .chrome {
+    .window::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 24%);
+    }
+
+    .title-bar {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+      align-items: center;
       justify-content: space-between;
-      margin-bottom: 18px;
-      padding: 8px 12px;
-      background: linear-gradient(180deg, #40dfff, #0c6eb0);
-      border: 3px outset #aefcff;
-      color: #001320;
+      gap: 12px;
+      padding: 4px 6px;
+      background: linear-gradient(90deg, var(--title-start), var(--title-end));
+      color: #ffffff;
+      font-size: 0.92rem;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-size: 0.8rem;
     }
 
-    .blink {
-      animation: blink 1s steps(2, start) infinite;
+    .title-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .masthead {
-      margin-bottom: 18px;
-    }
-
-    .eyebrow {
-      margin: 0 0 10px;
-      color: var(--accent);
-      font-size: 0.95rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      margin: 0;
-      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
-      font-size: clamp(2.8rem, 6vw, 5.6rem);
-      line-height: 0.9;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--accent);
-      text-shadow:
-        3px 3px 0 #ff4fd8,
-        6px 6px 0 #0e203d,
-        0 0 18px rgba(255, 222, 89, 0.45);
-    }
-
-    .lead {
-      margin: 12px 0 0;
-      font-size: 1.12rem;
-      color: #e8f6ff;
-      max-width: 62ch;
-      line-height: 1.5;
-    }
-
-    .badge-row {
+    .title-buttons {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
+      gap: 4px;
+      flex-shrink: 0;
     }
 
-    .badge {
-      padding: 8px 12px;
-      border: 2px outset #fff0a0;
-      background: linear-gradient(180deg, #4b1d7b, #1e0d3c);
-      color: #fff3a2;
-      text-transform: uppercase;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      box-shadow: 0 0 10px rgba(255, 79, 216, 0.18);
-    }
-
-    .marquee-wrap {
-      margin-bottom: 18px;
-      border: 3px ridge #ffd2f7;
-      background: linear-gradient(180deg, #2d0233, #120014);
-      box-shadow: 0 0 18px rgba(255, 79, 216, 0.2);
-    }
-
-    .marquee-label {
-      padding: 8px 12px;
-      background: linear-gradient(180deg, #ff69d7, #9d2d77);
-      color: #1d0018;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-size: 0.82rem;
-      border-bottom: 2px solid #ffd2f7;
-    }
-
-    marquee {
-      padding: 12px 0;
-      color: #fff59e;
-      font-family: "Lucida Console", "Courier New", monospace;
-      font-size: clamp(1rem, 2vw, 1.2rem);
-      font-weight: 700;
-      text-shadow: 0 0 10px rgba(255, 222, 89, 0.6);
-    }
-
-    .hero {
+    .title-button {
+      width: 18px;
+      height: 18px;
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 24px;
-      align-items: start;
-      margin-bottom: 24px;
-    }
-
-    .panel,
-    .tile {
-      background:
-        linear-gradient(180deg, rgba(10, 32, 66, 0.98), rgba(1, 8, 17, 0.98));
-      border: 3px ridge var(--border-light);
-      border-radius: 0;
-      box-shadow:
-        inset 0 0 0 2px rgba(4, 14, 24, 0.9),
-        inset 0 0 18px rgba(84, 243, 255, 0.08),
-        0 0 16px rgba(84, 243, 255, 0.14);
-    }
-
-    .panel {
-      padding: 20px;
-    }
-
-    .tile-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .tile {
-      padding: 16px;
-      text-align: center;
-    }
-
-    .tile-value {
-      display: block;
-      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
-      font-size: clamp(1.8rem, 4vw, 3.1rem);
-      font-weight: 700;
+      place-items: center;
+      background: var(--window);
+      color: #000000;
+      font-size: 0.7rem;
       line-height: 1;
-      color: var(--accent-3);
-      text-shadow: 2px 2px 0 #00250a;
+      border-top: 2px solid var(--border-light);
+      border-left: 2px solid var(--border-light);
+      border-right: 2px solid var(--border-dark);
+      border-bottom: 2px solid var(--border-dark);
     }
 
-    .tile-label,
-    .stat-label {
-      display: block;
-      margin-top: 8px;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--muted);
+    .window-body {
+      padding: 18px;
     }
 
-    .goal {
+    .result {
+      margin: 0 0 18px;
+      padding: 18px 16px;
+      background: var(--field);
+      border-top: 2px solid var(--border-dark);
+      border-left: 2px solid var(--border-dark);
+      border-right: 2px solid var(--border-light);
+      border-bottom: 2px solid var(--border-light);
+      font-size: clamp(1.45rem, 4vw, 2rem);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .controls {
       display: grid;
-      gap: 12px;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
     }
 
     label {
-      font-size: 0.82rem;
+      font-size: 0.88rem;
       font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
     }
 
     input {
       width: 100%;
-      margin-top: 8px;
-      padding: 14px 16px;
-      border: 3px inset #c8faff;
-      border-radius: 0;
+      padding: 9px 10px;
       font: inherit;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--accent-3);
-      background: #00070e;
-      box-shadow: inset 0 0 12px rgba(109, 255, 114, 0.08);
+      color: var(--text);
+      background: var(--field);
+      border-top: 2px solid var(--border-dark);
+      border-left: 2px solid var(--border-dark);
+      border-right: 2px solid var(--border-light);
+      border-bottom: 2px solid var(--border-light);
     }
 
-    input:focus {
-      outline: 2px solid rgba(84, 243, 255, 0.45);
-      border-color: var(--border-light);
-    }
-
-    .status {
-      margin: 0;
-      padding: 14px 16px;
-      border-radius: 0;
-      border: 2px dashed #ffe666;
-      background: rgba(255, 222, 89, 0.12);
-      color: #fff3af;
-      font-size: 0.98rem;
-      line-height: 1.5;
-    }
-
-    .progress {
-      margin-top: 8px;
-    }
-
-    .progress-track {
-      width: 100%;
-      height: 22px;
-      border-radius: 0;
-      overflow: hidden;
-      background:
-        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 12%, transparent 12% 24%),
-        linear-gradient(180deg, #0d1a2c, #01060d);
-      background-size: 40px 100%, auto;
-      border: 3px inset #bafcff;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0;
-      background: linear-gradient(90deg, #6dff72 0%, #ffde59 55%, #ff4fd8 100%);
-      transition: width 0.25s ease;
-    }
-
-    .stats,
-    .pace-grid {
-      display: grid;
-      gap: 12px;
-    }
-
-    .stats {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      margin-bottom: 12px;
-    }
-
-    .pace-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .stat {
-      padding: 18px;
-    }
-
-    .stat-value {
-      display: block;
-      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
-      font-size: 1.9rem;
-      font-weight: 700;
-      color: var(--accent-4);
-      text-shadow: 2px 2px 0 #03111d;
-    }
-
-    .footnote {
-      margin: 20px 0 0;
-      color: var(--muted);
-      font-size: 0.83rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    @keyframes blink {
-      50% {
-        opacity: 0;
-      }
-    }
-
-    @media (max-width: 820px) {
-      .chrome {
-        justify-content: center;
-      }
-
-      .hero,
-      .stats,
-      .pace-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .tile-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      main {
-        padding: 22px;
-      }
+    .hint {
+      margin: 16px 0 0;
+      font-size: 0.82rem;
     }
   </style>
 </head>
 <body>
-  <main>
-    <div class="chrome">
-      <span>TOMWRITE.EXE</span>
-      <span class="blink">Now Loading Deadline Panic...</span>
-      <span>Save Slot: None</span>
+  <main class="window" aria-label="Tom writing tracker">
+    <div class="title-bar">
+      <div class="title-text">Tom, You Need To Write</div>
+      <div class="title-buttons" aria-hidden="true">
+        <div class="title-button">_</div>
+        <div class="title-button">&#9633;</div>
+        <div class="title-button">X</div>
+      </div>
     </div>
 
-    <header class="masthead">
-      <p class="eyebrow">1990s Writing Emergency System</p>
-      <h1>Tom, You Need To Write</h1>
-      <p class="lead">
-        Default target: 40,000 words. One deadline. No side quests. Change the target if needed, type in the current word count, and the panic math updates live.
-      </p>
-      <div class="badge-row" aria-hidden="true">
-        <span class="badge">Deadline Boss Fight</span>
-        <span class="badge">No Respawns</span>
-        <span class="badge">Main Quest Only</span>
-      </div>
-    </header>
+    <div class="window-body">
+      <p class="result" id="words-left-text">You have 40,000 words left.</p>
 
-    <section class="marquee-wrap" aria-label="Random motivation line">
-      <div class="marquee-label">Random Motivation Generator</div>
-      <marquee id="random-line" scrollamount="10">Loading discouragement...</marquee>
-    </section>
-
-    <section class="hero">
-      <div class="panel">
-        <div class="tile-grid" aria-label="Time left">
-          <div class="tile">
-            <span class="tile-value" id="days">0</span>
-            <span class="tile-label">Days</span>
-          </div>
-          <div class="tile">
-            <span class="tile-value" id="hours">0</span>
-            <span class="tile-label">Hours</span>
-          </div>
-          <div class="tile">
-            <span class="tile-value" id="minutes">0</span>
-            <span class="tile-label">Minutes</span>
-          </div>
-          <div class="tile">
-            <span class="tile-value" id="seconds">0</span>
-            <span class="tile-label">Seconds</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel goal">
-        <div>
-          <label for="goal-words">Total word goal</label>
+      <div class="controls">
+        <div class="field">
+          <label for="goal-words">Goal</label>
           <input id="goal-words" type="number" min="1" step="100" value="40000" inputmode="numeric">
         </div>
 
-        <div>
+        <div class="field">
           <label for="words-written">Words written so far</label>
-          <input id="words-written" type="number" min="0" max="40000" step="1" value="0" inputmode="numeric">
-        </div>
-
-        <p class="status" id="status-text">
-          Enter Tom's current word count to see the remaining target and the pace needed from now.
-        </p>
-
-        <div class="progress">
-          <div class="progress-track" aria-hidden="true">
-            <div class="progress-fill" id="progress-fill"></div>
-          </div>
+          <input id="words-written" type="number" min="0" step="1" value="0" inputmode="numeric">
         </div>
       </div>
-    </section>
 
-    <section class="stats">
-      <div class="panel stat">
-        <span class="stat-value" id="words-remaining">40,000</span>
-        <span class="stat-label">Words Remaining</span>
-      </div>
-      <div class="panel stat">
-        <span class="stat-value" id="percent-complete">0%</span>
-        <span class="stat-label">Complete</span>
-      </div>
-      <div class="panel stat">
-        <span class="stat-value" id="deadline-text">Jan 6, 2027</span>
-        <span class="stat-label">Deadline</span>
-      </div>
-    </section>
-
-    <section class="pace-grid" aria-label="Required writing pace">
-      <div class="panel stat">
-        <span class="stat-value" id="per-month">0</span>
-        <span class="stat-label">Words Per Month</span>
-      </div>
-      <div class="panel stat">
-        <span class="stat-value" id="per-week">0</span>
-        <span class="stat-label">Words Per Week</span>
-      </div>
-      <div class="panel stat">
-        <span class="stat-value" id="per-day">0</span>
-        <span class="stat-label">Words Per Day</span>
-      </div>
-      <div class="panel stat">
-        <span class="stat-value" id="per-hour">0</span>
-        <span class="stat-label">Words Per Hour</span>
-      </div>
-      <div class="panel stat">
-        <span class="stat-value" id="per-minute">0</span>
-        <span class="stat-label">Words Per Minute</span>
-      </div>
-      <div class="panel stat">
-        <span class="stat-value" id="per-second">0</span>
-        <span class="stat-label">Words Per Second</span>
-      </div>
-    </section>
-
-    <p class="footnote">
-      Progress is saved in this browser, so the current word count stays put when the page is reopened.
-    </p>
+      <p class="hint">The goal is editable and this page remembers both numbers in this browser.</p>
+    </div>
   </main>
 
   <script>
     const DEFAULT_GOAL_WORDS = 40000;
-    const DEADLINE = new Date(2027, 0, 6, 23, 59, 59);
-    const PHRASES = [
-      "Stop playing Slay the Spire.",
-      "Put down that paintbrush, nerd.",
-      "If Scott Alexander could write shorter articles then you would have written this by now.",
-      "Warcraft peon voice: work work."
-    ];
-    const AVERAGE_MONTH_MS = 1000 * 60 * 60 * 24 * 30.4375;
-    const WEEK_MS = 1000 * 60 * 60 * 24 * 7;
-    const DAY_MS = 1000 * 60 * 60 * 24;
-    const HOUR_MS = 1000 * 60 * 60;
-    const MINUTE_MS = 1000 * 60;
-    const SECOND_MS = 1000;
     const GOAL_STORAGE_KEY = "tom-countdown-goal-words";
     const WRITTEN_STORAGE_KEY = "tom-countdown-words-written";
-    const LAST_PHRASE_KEY = "tom-countdown-last-phrase";
 
     const goalInput = document.getElementById("goal-words");
     const wordsInput = document.getElementById("words-written");
-    const statusText = document.getElementById("status-text");
-    const progressFill = document.getElementById("progress-fill");
-    const wordsRemainingEl = document.getElementById("words-remaining");
-    const percentCompleteEl = document.getElementById("percent-complete");
-    const deadlineTextEl = document.getElementById("deadline-text");
-    const randomLineEl = document.getElementById("random-line");
-
-    const timeEls = {
-      days: document.getElementById("days"),
-      hours: document.getElementById("hours"),
-      minutes: document.getElementById("minutes"),
-      seconds: document.getElementById("seconds")
-    };
-
-    const paceEls = {
-      month: document.getElementById("per-month"),
-      week: document.getElementById("per-week"),
-      day: document.getElementById("per-day"),
-      hour: document.getElementById("per-hour"),
-      minute: document.getElementById("per-minute"),
-      second: document.getElementById("per-second")
-    };
+    const wordsLeftText = document.getElementById("words-left-text");
 
     function clampGoal(value) {
       if (!Number.isFinite(value)) {
@@ -536,95 +221,25 @@
       return Math.max(0, Math.min(goalWords, Math.round(value)));
     }
 
-    function formatNumber(value, decimals = 0) {
-      return new Intl.NumberFormat("en-GB", {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals
-      }).format(value);
-    }
-
-    function formatRate(words, periodsRemaining, decimals) {
-      if (words <= 0) {
-        return "0";
-      }
-
-      if (periodsRemaining <= 0) {
-        return "Overdue";
-      }
-
-      return formatNumber(words / periodsRemaining, decimals);
-    }
-
-    function choosePhraseForLoad() {
-      const lastPhraseIndex = Number(localStorage.getItem(LAST_PHRASE_KEY));
-      let nextIndex = Math.floor(Math.random() * PHRASES.length);
-
-      if (PHRASES.length > 1 && Number.isInteger(lastPhraseIndex) && nextIndex === lastPhraseIndex) {
-        nextIndex = (nextIndex + 1 + Math.floor(Math.random() * (PHRASES.length - 1))) % PHRASES.length;
-      }
-
-      localStorage.setItem(LAST_PHRASE_KEY, String(nextIndex));
-      return PHRASES[nextIndex];
-    }
-
-    function updateCountdownParts(remainingMs) {
-      const safeMs = Math.max(0, remainingMs);
-      const totalSeconds = Math.floor(safeMs / 1000);
-      const days = Math.floor(totalSeconds / 86400);
-      const hours = Math.floor((totalSeconds % 86400) / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-
-      timeEls.days.textContent = formatNumber(days);
-      timeEls.hours.textContent = String(hours).padStart(2, "0");
-      timeEls.minutes.textContent = String(minutes).padStart(2, "0");
-      timeEls.seconds.textContent = String(seconds).padStart(2, "0");
+    function formatNumber(value) {
+      return new Intl.NumberFormat("en-GB").format(value);
     }
 
     function update() {
-      const now = Date.now();
-      const remainingMs = DEADLINE.getTime() - now;
       const goalWords = clampGoal(Number(goalInput.value));
       const wordsWritten = clampWords(Number(wordsInput.value), goalWords);
-      const wordsRemaining = Math.max(0, goalWords - wordsWritten);
-      const percentComplete = (wordsWritten / goalWords) * 100;
-
-      updateCountdownParts(remainingMs);
+      const wordsLeft = Math.max(0, goalWords - wordsWritten);
 
       goalInput.value = goalWords;
       wordsInput.value = wordsWritten;
       wordsInput.max = String(goalWords);
-      wordsRemainingEl.textContent = formatNumber(wordsRemaining);
-      percentCompleteEl.textContent = `${formatNumber(percentComplete, 1)}%`;
-      progressFill.style.width = `${percentComplete}%`;
-
-      paceEls.month.textContent = formatRate(wordsRemaining, remainingMs / AVERAGE_MONTH_MS, 0);
-      paceEls.week.textContent = formatRate(wordsRemaining, remainingMs / WEEK_MS, 0);
-      paceEls.day.textContent = formatRate(wordsRemaining, remainingMs / DAY_MS, 1);
-      paceEls.hour.textContent = formatRate(wordsRemaining, remainingMs / HOUR_MS, 2);
-      paceEls.minute.textContent = formatRate(wordsRemaining, remainingMs / MINUTE_MS, 3);
-      paceEls.second.textContent = formatRate(wordsRemaining, remainingMs / SECOND_MS, 5);
-
-      if (remainingMs <= 0 && wordsRemaining > 0) {
-        statusText.textContent = `Deadline reached. ${formatNumber(wordsRemaining)} words still remain. No more side quests.`;
-      } else if (wordsRemaining === 0) {
-        statusText.textContent = `Target complete. The ${formatNumber(goalWords)}-word boss has been defeated.`;
-      } else {
-        statusText.textContent =
-          `${formatNumber(wordsWritten)} words banked out of ${formatNumber(goalWords)}. ${formatNumber(wordsRemaining)} still to grind. `
-          + `The numbers below are the pace needed from right now.`;
-      }
+      wordsLeftText.textContent = `You have ${formatNumber(wordsLeft)} words left.`;
     }
 
     function handleInput() {
-      const goalWords = clampGoal(Number(goalInput.value));
-      const cleanedWords = clampWords(Number(wordsInput.value), goalWords);
-
-      goalInput.value = goalWords;
-      wordsInput.value = cleanedWords;
-      localStorage.setItem(GOAL_STORAGE_KEY, String(goalWords));
-      localStorage.setItem(WRITTEN_STORAGE_KEY, String(cleanedWords));
       update();
+      localStorage.setItem(GOAL_STORAGE_KEY, goalInput.value);
+      localStorage.setItem(WRITTEN_STORAGE_KEY, wordsInput.value);
     }
 
     const savedGoal = Number(localStorage.getItem(GOAL_STORAGE_KEY));
@@ -637,20 +252,9 @@
       wordsInput.value = clampWords(savedWords, clampGoal(Number(goalInput.value)));
     }
 
-    randomLineEl.textContent = choosePhraseForLoad();
-
-    deadlineTextEl.textContent = DEADLINE.toLocaleString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-
     goalInput.addEventListener("input", handleInput);
     wordsInput.addEventListener("input", handleInput);
     update();
-    setInterval(update, 1000);
   </script>
 </body>
 </html>
