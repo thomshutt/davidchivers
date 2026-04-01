@@ -176,12 +176,58 @@
     }
 
     @media (max-width: 520px) {
+      body {
+        padding: 10px;
+      }
+
       main {
-        padding: 20px;
+        width: 100%;
+        padding: 14px;
+      }
+
+      .masthead,
+      .marquee-wrap,
+      .panel {
+        margin-bottom: 12px;
+      }
+
+      h1 {
+        white-space: normal;
+        font-size: 1.1rem;
+        line-height: 1.15;
+        letter-spacing: 0.02em;
+      }
+
+      marquee {
+        font-size: 0.82rem;
+      }
+
+      input {
+        padding: 12px;
+        font-size: 1rem;
+      }
+
+      .deadline {
+        font-size: 0.82rem;
       }
 
       .pace-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .stat {
+        padding: 12px 8px;
+      }
+
+      .stat-value {
+        font-size: 1rem;
+      }
+
+      .stat-label {
+        margin-top: 6px;
+        font-size: 0.64rem;
+        letter-spacing: 0.08em;
       }
     }
   </style>
