@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tom, You Need To Write</title>
+  <title>Tom, You Need To Write!</title>
   <style>
     :root {
       color-scheme: dark;
@@ -24,13 +24,7 @@
       margin: 0;
       min-height: 100vh;
       font-family: "Trebuchet MS", Verdana, sans-serif;
-      background:
-        radial-gradient(circle at 20% 18%, rgba(84, 243, 255, 0.18), transparent 20%),
-        radial-gradient(circle at 78% 14%, rgba(255, 79, 216, 0.16), transparent 16%),
-        linear-gradient(rgba(84, 243, 255, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(84, 243, 255, 0.08) 1px, transparent 1px),
-        linear-gradient(180deg, #15284f 0%, #060912 38%, #000000 100%);
-      background-size: auto, auto, 26px 26px, 26px 26px, auto;
+      background: #000000;
       color: var(--ink);
       display: grid;
       place-items: center;
@@ -40,18 +34,7 @@
     }
 
     body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.06) 0,
-        rgba(255, 255, 255, 0.06) 1px,
-        transparent 2px,
-        transparent 4px
-      );
-      opacity: 0.14;
-      pointer-events: none;
+      content: none;
     }
 
     main {
@@ -66,55 +49,24 @@
       position: relative;
     }
 
-    .chrome {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: space-between;
-      margin-bottom: 18px;
-      padding: 8px 12px;
-      background: linear-gradient(180deg, #40dfff, #0c6eb0);
-      border: 3px outset #aefcff;
-      color: #001320;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
     .masthead {
       margin-bottom: 18px;
-    }
-
-    .eyebrow {
-      margin: 0 0 10px;
-      color: var(--accent);
-      font-size: 0.95rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
+      text-align: center;
     }
 
     h1 {
       margin: 0;
-      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
-      font-size: clamp(2.8rem, 6vw, 5.6rem);
-      line-height: 0.9;
+      font-family: "Lucida Console", "Courier New", monospace;
+      font-size: clamp(1.35rem, 3.6vw, 2.8rem);
+      line-height: 1.05;
       letter-spacing: 0.04em;
+      color: #6dff72;
+      white-space: nowrap;
       text-transform: uppercase;
-      color: var(--accent);
       text-shadow:
-        3px 3px 0 #ff4fd8,
-        6px 6px 0 #0e203d,
-        0 0 18px rgba(255, 222, 89, 0.45);
-    }
-
-    .lead {
-      margin: 12px 0 0;
-      font-size: 1.08rem;
-      color: #e8f6ff;
-      max-width: 58ch;
-      line-height: 1.5;
+        2px 2px 0 #ff4fd8,
+        4px 4px 0 #0e203d;
+      animation: title-flash 1.4s steps(2, start) infinite;
     }
 
     .marquee-wrap {
@@ -124,18 +76,8 @@
       box-shadow: 0 0 18px rgba(255, 79, 216, 0.2);
     }
 
-    .marquee-label {
-      padding: 8px 12px;
-      background: linear-gradient(180deg, #ff69d7, #9d2d77);
-      color: #1d0018;
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      border-bottom: 2px solid #ffd2f7;
-    }
-
     marquee {
+      display: block;
       padding: 12px 0;
       color: #fff59e;
       font-family: "Lucida Console", "Courier New", monospace;
@@ -154,21 +96,9 @@
       padding: 20px;
     }
 
-    .result {
-      margin: 0 0 16px;
-      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
-      font-size: clamp(2rem, 4.5vw, 3.4rem);
-      line-height: 1;
-      color: var(--accent);
-      text-shadow:
-        2px 2px 0 #ff4fd8,
-        4px 4px 0 #0e203d;
-    }
-
     .field {
       display: grid;
       gap: 8px;
-      margin-bottom: 16px;
     }
 
     label {
@@ -183,12 +113,12 @@
       width: 100%;
       padding: 14px 16px;
       border: 3px inset #c8faff;
-      font: inherit;
-      font-size: 1.25rem;
+      font-family: "Lucida Console", "Courier New", monospace;
+      font-size: 1.2rem;
       font-weight: 700;
       color: var(--accent-3);
       background: #00070e;
-      box-shadow: inset 0 0 12px rgba(109, 255, 114, 0.08);
+      box-shadow: none;
     }
 
     input:focus {
@@ -217,11 +147,11 @@
 
     .stat-value {
       display: block;
-      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
-      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-family: "Lucida Console", "Courier New", monospace;
+      font-size: clamp(1.45rem, 2.8vw, 2rem);
       font-weight: 700;
       color: var(--accent-3);
-      text-shadow: 2px 2px 0 #00250a;
+      text-shadow: none;
     }
 
     .stat-label {
@@ -231,6 +161,12 @@
       color: var(--muted);
       letter-spacing: 0.14em;
       text-transform: uppercase;
+    }
+
+    @keyframes title-flash {
+      50% {
+        opacity: 0.55;
+      }
     }
 
     @media (max-width: 760px) {
@@ -252,26 +188,15 @@
 </head>
 <body>
   <main>
-    <div class="chrome">
-      <span>TOMWRITE.EXE</span>
-      <span>Draft Panic Mode</span>
-      <span>Save Slot: Browser</span>
-    </div>
-
     <header class="masthead">
-      <p class="eyebrow">1990s Writing Emergency System</p>
-      <h1>Tom, You Need To Write</h1>
-      <p class="lead">The target starts at 40,000. Click it down as the draft gets written, and the required pace updates underneath.</p>
+      <h1>Tom, You Need To Write!</h1>
     </header>
 
-    <section class="marquee-wrap" aria-label="Writing banner">
-      <div class="marquee-label">Writing Banner</div>
-      <marquee scrollamount="10">40,000 words loaded. Click down from there. Deadline locked for 6 Jan 2027.</marquee>
+    <section class="marquee-wrap" aria-label="Scrolling phrase banner">
+      <marquee id="random-line" scrollamount="10">Loading...</marquee>
     </section>
 
     <section class="panel">
-      <p class="result">You have <span id="words-left-text">40,000</span> words left.</p>
-
       <div class="field">
         <label for="words-left">Words Left</label>
         <input id="words-left" type="number" min="0" step="100" value="40000" inputmode="numeric">
@@ -304,14 +229,20 @@
     const DEFAULT_WORDS_LEFT = 40000;
     const DEADLINE = new Date(2027, 0, 6, 23, 59, 59);
     const STORAGE_KEY = "tom-countdown-words-left";
+    const PHRASES = [
+      "Stop playing Slay the Spire.",
+      "Put down that paintbrush, nerd.",
+      "If Scott Alexander could write shorter articles then you would have written this by now.",
+      "Warcraft peon voice: work work."
+    ];
     const DAY_MS = 1000 * 60 * 60 * 24;
     const HOUR_MS = 1000 * 60 * 60;
     const MINUTE_MS = 1000 * 60;
     const SECOND_MS = 1000;
 
     const wordsLeftInput = document.getElementById("words-left");
-    const wordsLeftText = document.getElementById("words-left-text");
     const deadlineText = document.getElementById("deadline-text");
+    const randomLine = document.getElementById("random-line");
 
     const paceEls = {
       day: document.getElementById("per-day"),
@@ -352,7 +283,6 @@
       const remainingMs = DEADLINE.getTime() - Date.now();
 
       wordsLeftInput.value = wordsLeft;
-      wordsLeftText.textContent = formatNumber(wordsLeft);
       paceEls.day.textContent = formatRate(wordsLeft, DAY_MS, remainingMs, 1);
       paceEls.hour.textContent = formatRate(wordsLeft, HOUR_MS, remainingMs, 2);
       paceEls.minute.textContent = formatRate(wordsLeft, MINUTE_MS, remainingMs, 3);
@@ -368,6 +298,8 @@
     if (Number.isFinite(savedWordsLeft)) {
       wordsLeftInput.value = clampWords(savedWordsLeft);
     }
+
+    randomLine.textContent = `${PHRASES.join("   //   ")}   //   `;
 
     deadlineText.textContent = `Deadline: ${DEADLINE.toLocaleString("en-GB", {
       day: "numeric",
