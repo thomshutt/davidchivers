@@ -228,13 +228,13 @@
   <script>
     const DEFAULT_WORDS_LEFT = 40000;
     const DEADLINE = new Date(2027, 0, 6, 23, 59, 59);
-    const STORAGE_KEY = "tom-countdown-words-left";
     const PHRASES = [
       "Stop playing Slay the Spire.",
       "Put down that paintbrush, nerd.",
       "If Scott Alexander could write shorter articles then you would have written this by now.",
       "Warcraft peon voice: work work."
     ];
+    const PHRASE_SPACER = "\u00A0".repeat(32);
     const DAY_MS = 1000 * 60 * 60 * 24;
     const HOUR_MS = 1000 * 60 * 60;
     const MINUTE_MS = 1000 * 60;
@@ -291,15 +291,10 @@
 
     function handleInput() {
       update();
-      localStorage.setItem(STORAGE_KEY, wordsLeftInput.value);
     }
 
-    const savedWordsLeft = Number(localStorage.getItem(STORAGE_KEY));
-    if (Number.isFinite(savedWordsLeft)) {
-      wordsLeftInput.value = clampWords(savedWordsLeft);
-    }
-
-    randomLine.textContent = `${PHRASES.join("   //   ")}   //   `;
+    wordsLeftInput.value = DEFAULT_WORDS_LEFT;
+    randomLine.textContent = `${PHRASES.join(PHRASE_SPACER)}${PHRASE_SPACER}`;
 
     deadlineText.textContent = `Deadline: ${DEADLINE.toLocaleString("en-GB", {
       day: "numeric",
