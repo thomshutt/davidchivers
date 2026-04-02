@@ -38,6 +38,7 @@ function renderFront(products) {
           <p class="wine-meta">${wine.regionLabel}</p>
           <p class="wine-price">${price}</p>
           <p class="wine-note">${wine.shortDescription}</p>
+          <p class="wine-daniel"><strong>Daniel says:</strong> ${wine.danielNote || "Ask us what makes this bottle worth trying."}</p>
         </article>
       `;
     }).join("");
@@ -97,6 +98,97 @@ function renderAdmin(adminData) {
   draw(tableNames[0]);
 }
 
+function mergeWineMapData(products, adminData) {
+  const catalogueById = Object.fromEntries(
+    (adminData.tables.catalogue || []).map((row) => [row.internal_product_id, row])
+  );
+
+  return products
+    .map((wine) => {
+      const catalogue = catalogueById[wine.id];
+      if (!catalogue || !catalogue.latitude || !catalogue.longitude) return null;
+      return {
+        ...wine,
+        latitude: Number(catalogue.latitude),
+        longitude: Number(catalogue.longitude),
+        producerLocationText: catalogue.producer_location_text,
+      };
+    })
+    .filter(Boolean);
+}
+
+function mapDetailMarkup(wine) {
+  const price = wine.purchasableOnline ? gbp(wine.promotionalPrice ?? wine.takeoutPrice ?? wine.bottleRetailPrice) : "Ask in bar";
+  return `
+    <img src="${wine.mainImageUrl}" alt="${wine.altText}">
+    <h2>${wine.title}</h2>
+    <p><strong>${wine.regionLabel}</strong></p>
+    <p><strong>Price:</strong> ${price}</p>
+    <p>${wine.shortDescription}</p>
+    <p><strong>Daniel says:</strong> ${wine.danielNote || "Ask us what makes this bottle worth trying."}</p>
+    <p><strong>Tasting note:</strong> ${wine.tastingNotes}</p>
+  `;
+}
+
+function renderMap(products, adminData) {
+  const mapEl = document.getElementById("wineMap");
+  const detailEl = document.querySelector("[data-map-detail]");
+  if (!mapEl || !detailEl || typeof Plotly === "undefined") return;
+
+  const wines = mergeWineMapData(products, adminData);
+
+  const trace = {
+    type: "scattergeo",
+    mode: "markers",
+    lat: wines.map((wine) => wine.latitude),
+    lon: wines.map((wine) => wine.longitude),
+    text: wines.map((wine) => `${wine.title}<br>${wine.regionLabel}`),
+    customdata: wines.map((wine) => wine.id),
+    hovertemplate: "%{text}<extra></extra>",
+    marker: {
+      size: 12,
+      color: "#6f3cc3",
+      line: {
+        color: "#ffffff",
+        width: 1,
+      },
+    },
+  };
+
+  const layout = {
+    margin: { l: 0, r: 0, t: 0, b: 0 },
+    paper_bgcolor: "#ffffff",
+    geo: {
+      projection: { type: "natural earth" },
+      showland: true,
+      landcolor: "#f4f4f4",
+      showcountries: true,
+      countrycolor: "#cfcfcf",
+      showocean: true,
+      oceancolor: "#f8fbff",
+      coastlinecolor: "#cfcfcf",
+      lakecolor: "#f8fbff",
+      bgcolor: "#ffffff",
+    },
+  };
+
+  Plotly.newPlot(mapEl, [trace], layout, { responsive: true, displayModeBar: false });
+
+  const wineById = Object.fromEntries(wines.map((wine) => [wine.id, wine]));
+
+  mapEl.on("plotly_click", (event) => {
+    const id = event.points?.[0]?.customdata;
+    const wine = wineById[id];
+    if (wine) {
+      detailEl.innerHTML = mapDetailMarkup(wine);
+    }
+  });
+
+  if (wines[0]) {
+    detailEl.innerHTML = mapDetailMarkup(wines[0]);
+  }
+}
+
 async function init() {
   const page = document.body.dataset.page;
 
@@ -108,6 +200,12 @@ async function init() {
   if (page === "admin") {
     const adminData = await loadJson("data/admin-data.json");
     renderAdmin(adminData);
+  }
+
+  if (page === "map") {
+    const products = await loadJson("data/public-products.json");
+    const adminData = await loadJson("data/admin-data.json");
+    renderMap(products, adminData);
   }
 }
 
