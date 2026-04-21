@@ -23,18 +23,20 @@ Confirmed from the local repo contents:
 - `/metal_map/`
 - `/wine_bar/`
 
-Current inference:
+Current role:
 
-- This repo appears to be the source for the root `davidchivers.co.uk` site and its project subpaths.
-- The root homepage matches this repo much more closely than the newer `davidchivers` repo in OneDrive.
+- This repo is only a temporary GitHub Pages bridge for the custom domain while the site is being moved.
+- It should not be treated as the canonical website repo.
 
 ## Email Drafter
 
-- Intended public route: `/email_drafter/`
-- Public files for that route should live in `email_drafter/`
+- Intended public route: `/drafter/`
+- Public files for that route should live in `drafter/`
+- `/email_drafter/` should only be a compatibility redirect to `/drafter/`
 - Current files:
-  - `email_drafter/index.html`
-  - `email_drafter/responses.json`
+  - `drafter/index.html`
+  - `drafter/responses.json`
+  - `drafter/save-config.js`
 
 ## Canonical Source vs Publish Target
 
@@ -43,7 +45,7 @@ To avoid confusion:
 - Canonical working source for the drafter lives in the AI workspace:
   - `C:\Users\Dave_\AI\other\email_app\email_drafter\`
 - This website repo is the publish target copy for the public site:
-  - `C:\Users\Dave_\AI\_playground\sandbox_repos\davidchivers_site\email_drafter\`
+  - `C:\Users\Dave_\AI\_playground\sandbox_repos\davidchivers_site\drafter\`
 
 Recommended rule:
 
@@ -61,9 +63,10 @@ Evidence from that repo:
 - it has remote `https://github.com/davidchivers/davidchivers.git`
 - it contains a small AI setup wizard shell (`index.html`, `apps.js`, `styles.css`)
 
-Current inference:
+Current rule:
 
-- treat that repo as a separate microsite or newer experimental site area, not the authoritative root-site repo, unless deployment settings prove otherwise
+- treat `C:\Users\Dave_\OneDrive\Documents\GitHub\davidchivers.co.uk` as the canonical website repo
+- treat this sandbox repo as legacy bridge/history only
 
 ## Before Pushing New Website Work
 
