@@ -531,6 +531,7 @@ body {
   </div>
 </div>
 
+<script src="save-config.js"></script>
 <script>
 // ── Default responses ──
 const DEFAULT_RESPONSES = [
@@ -601,6 +602,9 @@ const WEBSITE_REPO = {
   branch: 'master',
   path: 'email_drafter/responses.json'
 };
+const SITE_CONFIG = (window.EMAIL_DRAFTER_CONFIG && typeof window.EMAIL_DRAFTER_CONFIG === 'object')
+  ? window.EMAIL_DRAFTER_CONFIG
+  : {};
 
 const DataService = {
   nextId() { return 'r' + Date.now() + Math.random().toString(36).slice(2,6); }
@@ -618,6 +622,14 @@ function deepClone(value) {
 function getGithubContentsUrl() {
   const { owner, repo, branch, path } = WEBSITE_REPO;
   return 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path.split('/').map(encodeURIComponent).join('/') + '?ref=' + encodeURIComponent(branch);
+}
+
+function getSaveApiUrl() {
+  return (SITE_CONFIG.saveApiUrl || '').trim();
+}
+
+function hasSaveApiUrl() {
+  return Boolean(getSaveApiUrl());
 }
 
 function decodeBase64Utf8(base64) {
@@ -774,43 +786,77 @@ function extractGithubError(payload, fallback) {
   return payload.message || fallback;
 }
 
-async function saveResponsesToWebsite() {
+async function saveResponsesDirectToGithub() {
   const token = requestGithubToken();
   if (!token) {
-    showToast('Website save cancelled');
-    return;
+    throw new Error('Website save cancelled');
   }
 
+  const latest = await fetchGithubResponses(token, { allowMissing: true });
+  websiteFileSha = latest.sha;
+
+  const response = await fetch(getGithubContentsUrl(), {
+    method: 'PUT',
+    headers: {
+      ...getGithubHeaders(token),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      message: 'Update email drafter responses',
+      branch: WEBSITE_REPO.branch,
+      sha: websiteFileSha,
+      content: encodeBase64Utf8(JSON.stringify(serializeResponses(), null, 2) + '\n')
+    })
+  });
+
+  if (!response.ok) {
+    let payload = null;
+    try { payload = await response.json(); } catch (error) {}
+    if (response.status === 401 || response.status === 403) sessionStorage.removeItem(GITHUB_TOKEN_KEY);
+    throw new Error(extractGithubError(payload, 'GitHub did not accept the save.'));
+  }
+
+  const payload = await response.json();
+  websiteFileSha = payload.content?.sha || websiteFileSha;
+}
+
+async function saveResponsesViaApi(saveApiUrl) {
+  const response = await fetch(saveApiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      password: EDIT_PASSWORD,
+      responses: serializeResponses()
+    })
+  });
+
+  let payload = null;
+  try { payload = await response.json(); } catch (error) {}
+
+  if (!response.ok || payload?.ok === false) {
+    throw new Error(extractGithubError(payload, 'The save service did not accept the update.'));
+  }
+
+  if (payload?.sha) websiteFileSha = payload.sha;
+  if (payload?.source) lastLoadedFrom = payload.source;
+}
+
+async function saveResponsesToWebsite() {
   saveWebsiteBtn.disabled = true;
   saveWebsiteBtn.textContent = 'Saving...';
 
   try {
-    const latest = await fetchGithubResponses(token, { allowMissing: true });
-    websiteFileSha = latest.sha;
-
-    const response = await fetch(getGithubContentsUrl(), {
-      method: 'PUT',
-      headers: {
-        ...getGithubHeaders(token),
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: 'Update email drafter responses',
-        branch: WEBSITE_REPO.branch,
-        sha: websiteFileSha,
-        content: encodeBase64Utf8(JSON.stringify(serializeResponses(), null, 2) + '\n')
-      })
-    });
-
-    if (!response.ok) {
-      let payload = null;
-      try { payload = await response.json(); } catch (error) {}
-      if (response.status === 401 || response.status === 403) sessionStorage.removeItem(GITHUB_TOKEN_KEY);
-      throw new Error(extractGithubError(payload, 'GitHub did not accept the save.'));
+    if (hasSaveApiUrl()) {
+      await saveResponsesViaApi(getSaveApiUrl());
+    } else {
+      const continueDirect = confirm('The password-only save service is not configured yet.\n\nClick OK to use the older GitHub token save for now, or Cancel to stop here.');
+      if (!continueDirect) {
+        showToast('Website save cancelled');
+        return;
+      }
+      await saveResponsesDirectToGithub();
     }
 
-    const payload = await response.json();
-    websiteFileSha = payload.content?.sha || websiteFileSha;
     sourceResponses = deepClone(serializeResponses());
     hasUnsavedChanges = false;
     updateSaveButton();
