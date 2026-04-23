@@ -112,6 +112,31 @@ body {
 }
 .toast.show { opacity: 1; }
 
+.context-banner {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 24px;
+  background: #f7f3f8;
+  border-bottom: 1px solid #dcc9df;
+  color: #1a365d;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.context-banner.show { display: flex; }
+.context-banner strong { color: #68246d; }
+.context-banner button {
+  margin-left: auto;
+  border: 1px solid #dcc9df;
+  background: #fff;
+  color: #68246d;
+  border-radius: 4px;
+  padding: 3px 9px;
+  font: inherit;
+  cursor: pointer;
+}
+.context-banner button:hover { background: #f0e7f2; }
+
 /* ── Main layout ── */
 .main {
   display: flex;
@@ -496,6 +521,7 @@ body {
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="context-banner" id="contextBanner"></div>
 
 <div class="main">
   <div class="sidebar" id="sidebar"></div>
@@ -695,8 +721,24 @@ function applyResponses(responses, { rememberSource = false, clearUnsaved = fals
   if (clearUnsaved) hasUnsavedChanges = false;
 }
 
-function getSessionToken() {
-  return sessionStorage.getItem(GITHUB_TOKEN_KEY) || '';
+function getSavedGithubToken() {
+  return localStorage.getItem(GITHUB_TOKEN_KEY) || sessionStorage.getItem(GITHUB_TOKEN_KEY) || '';
+}
+
+function clearSavedGithubToken() {
+  localStorage.removeItem(GITHUB_TOKEN_KEY);
+  sessionStorage.removeItem(GITHUB_TOKEN_KEY);
+}
+
+function saveGithubToken(token) {
+  const trimmed = (token || '').trim();
+  if (!trimmed) {
+    clearSavedGithubToken();
+    return '';
+  }
+  localStorage.setItem(GITHUB_TOKEN_KEY, trimmed);
+  sessionStorage.setItem(GITHUB_TOKEN_KEY, trimmed);
+  return trimmed;
 }
 
 function getGithubHeaders(token) {
@@ -744,6 +786,7 @@ async function loadLatestResponses(options = {}) {
   websiteFileSha = loaded.sha;
   lastLoadedFrom = loaded.source;
   applyResponses(loaded.responses, { rememberSource: true, clearUnsaved: true });
+  applyLaunchContext();
   render();
   updateSaveButton();
   if (!silent) showToast('Loaded latest from ' + lastLoadedFrom);
@@ -770,14 +813,11 @@ function requestEditorUnlock() {
 }
 
 function requestGithubToken() {
-  const existing = getSessionToken();
+  const existing = getSavedGithubToken();
   if (existing) return existing;
-  const entered = prompt('Enter a GitHub token that can update ' + WEBSITE_REPO.owner + '/' + WEBSITE_REPO.repo + '.\n\nIt will only be kept in this browser session.');
+  const entered = prompt('Enter a GitHub token that can update ' + WEBSITE_REPO.owner + '/' + WEBSITE_REPO.repo + '.\n\nIt will be kept on this browser on this device until GitHub rejects it.');
   if (!entered) return '';
-  const token = entered.trim();
-  if (!token) return '';
-  sessionStorage.setItem(GITHUB_TOKEN_KEY, token);
-  return token;
+  return saveGithubToken(entered);
 }
 
 function extractGithubError(payload, fallback) {
@@ -812,7 +852,7 @@ async function saveResponsesDirectToGithub() {
   if (!response.ok) {
     let payload = null;
     try { payload = await response.json(); } catch (error) {}
-    if (response.status === 401 || response.status === 403) sessionStorage.removeItem(GITHUB_TOKEN_KEY);
+    if (response.status === 401 || response.status === 403) clearSavedGithubToken();
     throw new Error(extractGithubError(payload, 'GitHub did not accept the save.'));
   }
 
@@ -849,11 +889,6 @@ async function saveResponsesToWebsite() {
     if (hasSaveApiUrl()) {
       await saveResponsesViaApi(getSaveApiUrl());
     } else {
-      const continueDirect = confirm('The password-only save service is not configured yet.\n\nClick OK to use the older GitHub token save for now, or Cancel to stop here.');
-      if (!continueDirect) {
-        showToast('Website save cancelled');
-        return;
-      }
       await saveResponsesDirectToGithub();
     }
 
@@ -925,6 +960,7 @@ const deletedLink = document.getElementById('deletedLink');
 const refreshBtn = document.getElementById('refreshBtn');
 const saveWebsiteBtn = document.getElementById('saveWebsiteBtn');
 const toastEl = document.getElementById('toast');
+const contextBanner = document.getElementById('contextBanner');
 const modalOverlay = document.getElementById('modalOverlay');
 const modalTitle = document.getElementById('modalTitle');
 const fCategory = document.getElementById('fCategory');
@@ -1102,6 +1138,73 @@ function saveModal() {
   render();
 }
 
+function getLaunchContext() {
+  const params = new URLSearchParams(window.location.search);
+  const type = (params.get('type') || params.get('enquiryType') || '').trim();
+  const category = (params.get('category') || type || '').trim();
+  const q = (params.get('q') || params.get('search') || type || category || '').trim();
+  return {
+    category,
+    q,
+    student: (params.get('student') || '').trim(),
+    ref: (params.get('ref') || params.get('reference') || '').trim(),
+    type
+  };
+}
+
+const FORM_TYPE_CATEGORY_ALIASES = {
+  'academic advisor': 'Academic advisor',
+  'assessment query': 'Assessment queries',
+  'attendance': 'Attendance',
+  'extension': 'Extensions',
+  'fees / finance': 'Fees / finance',
+  'it / systems access': 'IT / systems access',
+  'mitigating circumstances': 'Mitigating circumstances',
+  'module enquiry': 'Module enquiries',
+  'other': 'Other',
+  'timetable': 'Timetable'
+};
+
+function normaliseLaunchValue(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function getDrafterCategory(value) {
+  const key = normaliseLaunchValue(value);
+  return FORM_TYPE_CATEGORY_ALIASES[key] || String(value || '').trim();
+}
+
+function applyLaunchContext() {
+  const ctx = getLaunchContext();
+  const hasContext = Boolean(ctx.category || ctx.q || ctx.student || ctx.ref || ctx.type);
+  if (!hasContext) {
+    contextBanner.classList.remove('show');
+    contextBanner.innerHTML = '';
+    return;
+  }
+
+  const launchCategory = getDrafterCategory(ctx.category || ctx.type);
+  const categoryMatch = allResponses.find(r => normaliseLaunchValue(r.category) === normaliseLaunchValue(launchCategory));
+  if (categoryMatch) {
+    filter = { type: 'category', category: categoryMatch.category, subcategory: null };
+    expandedCats.add(categoryMatch.category);
+    searchQuery = '';
+    searchBox.value = '';
+  } else if (ctx.q) {
+    filter = { type: 'all', category: null, subcategory: null };
+    searchQuery = ctx.q;
+    searchBox.value = ctx.q;
+  }
+
+  const bits = [];
+  if (ctx.student) bits.push('<strong>Student:</strong> ' + esc(ctx.student));
+  if (ctx.ref) bits.push('<strong>Ref:</strong> ' + esc(ctx.ref));
+  if (ctx.type) bits.push('<strong>Type:</strong> ' + esc(ctx.type));
+
+  contextBanner.innerHTML = '<span>Opened from enquiry' + (bits.length ? ': ' + bits.join(' | ') : '') + '</span><button type="button" id="clearContextBtn">Clear context</button>';
+  contextBanner.classList.add('show');
+}
+
 // ── Events: sidebar ──
 sidebar.addEventListener('click', e => {
   const t = e.target;
@@ -1138,6 +1241,15 @@ sidebar.addEventListener('click', e => {
 
 // ── Events: search ──
 searchBox.addEventListener('input', () => { searchQuery = searchBox.value.trim(); buildCards(); });
+contextBanner.addEventListener('click', e => {
+  if (e.target.id !== 'clearContextBtn') return;
+  filter = { type: 'all', category: null, subcategory: null };
+  searchQuery = '';
+  searchBox.value = '';
+  contextBanner.classList.remove('show');
+  contextBanner.innerHTML = '';
+  render();
+});
 
 // ── Events: cards ──
 cardsPanel.addEventListener('click', e => {
@@ -1266,6 +1378,7 @@ window.addEventListener('beforeunload', event => {
 
 (async function init() {
   applyResponses(DEFAULT_RESPONSES, { rememberSource: true, clearUnsaved: true });
+  applyLaunchContext();
   render();
   updateSaveButton();
   await loadLatestResponses({ silent: true });
